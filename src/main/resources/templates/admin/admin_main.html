@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Startreum - 관리자 페이지</title>
+    <link rel="stylesheet" th:href="@{/css/admin_main.css}">
+
+</head>
+<body>
+<div class="admin-page">
+<!-- Sidebar -->
+<div class="sidebar">
+    <button onclick="location.href='#'">회원 관리</button>
+    <button onclick="location.href='/admin/project'">프로젝트 관리</button>
+    <button onclick="location.href='#'">송금 및 환불</button>
+    <button onclick="location.href='#'">문의 관리</button>
+</div>
+
+<!-- Header -->
+<div class="header">
+    <div th:replace="~{fragments/header :: header}"></div>
+</div>
+
+<!-- Main Content -->
+<div class="main-content">
+
+
+    <!-- 회원 관리 -->
+    <div class="card">
+        <h2>회원 관리</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                <tr>
+                    <th>회원 ID</th>
+                    <th>이메일</th>
+                    <th>이름</th>
+                    <th>역할</th>
+                    <th>가입일</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>546236</td>
+                    <td>art@example.com</td>
+                    <td>김예술</td>
+                    <td>수혜자</td>
+                    <td>2025-02-01</td>
+                </tr>
+                <tr>
+                    <td>742366</td>
+                    <td>support@example.com</td>
+                    <td>김지원</td>
+                    <td>후원자</td>
+                    <td>2025-02-02</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 프로젝트 관리 -->
+    <div class="card">
+        <h2>프로젝트 관리</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                <tr>
+                    <th>프로젝트 ID</th>
+                    <th>제목</th>
+                    <th>상태</th>
+                    <th>승인</th>
+                    <th>목표액</th>
+                    <th>현재 모집금액</th>
+                    <th>시작일</th>
+                    <th>종료일</th>
+                    <th>수정일</th>
+                    <th>생성일</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>000001</td>
+                    <td>피아노 리사이틀</td>
+                    <td class="status-fail">실패</td>
+                    <td>거절</td>
+                    <td>800,000원</td>
+                    <td>0원</td>
+                    <td>2025-02-05</td>
+                    <td>2025-02-05</td>
+                    <td>2025-02-05</td>
+                    <td>2025-02-05</td>
+                </tr>
+                <tr>
+                    <td>000002</td>
+                    <td>졸업 연주 공연</td>
+                    <td class="status-fail">실패</td>
+                    <td>승인</td>
+                    <td>600,000원</td>
+                    <td>480,000원</td>
+                    <td>2025-02-06</td>
+                    <td>2025-02-07</td>
+                    <td>2025-02-06</td>
+                    <td>2025-02-06</td>
+                </tr>
+                <tr>
+                    <td>000003</td>
+                    <td>지역아동센터 봉사활동1</td>
+                    <td class="status-success">성공</td>
+                    <td>승인</td>
+                    <td>400,000원</td>
+                    <td>500,000원</td>
+                    <td>2025-02-07</td>
+                    <td>2025-02-08</td>
+                    <td>2025-02-07</td>
+                    <td>2025-02-07</td>
+                </tr>
+                <tr>
+                    <td>000004</td>
+                    <td>지역아동센터 봉사활동2</td>
+                    <td class="status-pending">진행중</td>
+                    <td>승인</td>
+                    <td>400,000원</td>
+                    <td>700,000원</td>
+                    <td>2025-02-08</td>
+                    <td>2025-02-11</td>
+                    <td>2025-02-08</td>
+                    <td>2025-02-08</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+</div>
+</div>
+</body>
+</html>

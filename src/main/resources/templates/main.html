@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>STARTREUM - 메인 페이지</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/main.css">
+</head>
+<body>
+<div class="main-page">
+    <div class="main-container" th:style="'background: url(' + @{/img/main.png} + ') no-repeat center center/cover;'">
+        <div th:replace="~{fragments/header :: header}"></div>
+
+        <!-- 메인 타이틀 -->
+        <div class="title">
+            <div class="main-text">“DO WHAT EVER YOU WANT”</div>
+            <div class="sub-text">WITH</div>
+            <div class="brand-name">STARTREUM</div>
+        </div>
+
+        <!-- 주요 버튼 섹션 -->
+        <div class="buttons">
+            <a href="/projects/search">지금 둘러보기</a>
+            <button id="start-project-btn">내 프로젝트 시작하기</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>

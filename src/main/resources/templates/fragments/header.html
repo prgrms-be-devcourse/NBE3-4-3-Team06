@@ -1,0 +1,20 @@
+<div th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml">
+    <header class="custom-header">
+        <div class="logo-container">
+            <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Inria+Sans:wght@400;700&family=Jersey+25&display=swap" rel="stylesheet">
+            <link rel="stylesheet" th:href="@{/css/header.css}">
+            <script th:src="@{/js/header.js}"></script>
+            <!-- 로고 -->
+            <a href="/" class="logo-link">
+                <div class="logo">STARTREUM</div>
+            </a>
+        </div>
+
+        <!-- 로그인 상태에 따라 버튼 변경 -->
+        <div class="auth-buttons" id="auth-buttons">
+            <span class="user-name">로그인하세요</span>
+            <a href="/api/users/login" class="custom-btn">로그인</a>
+            <a href="/api/users/signup" class="custom-btn primary">회원가입</a>
+        </div>
+    </header>
+</div>

@@ -1,0 +1,113 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #FFFFFF;
+    margin: 0;
+    padding: 0;
+}
+
+.account-container {
+    max-width: 600px;
+    margin: 100px auto;
+    padding: 40px;
+    background: #F9F9F9;
+    border-radius: 16px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+h2 {
+    font-size: 35px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #333333;
+}
+
+p {
+    font-size: 20px;
+    margin: 10px 0;
+    color: #555555;
+}
+
+strong {
+    color: #333333;
+}
+
+button {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    background: #7D4988;
+    color: #FFFFFF;
+    font-size: 18px;
+    cursor: pointer;
+    margin: 10px 5px;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background: #693d74;
+}
+
+#account-info p {
+    font-size: 18px;
+    margin: 8px 0;
+    text-align: left;
+}
+
+#account-actions button {
+    width: 30%;
+}
+
+#funding-status {
+    font-weight: bold;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+    .account-container {
+        padding: 30px;
+        margin: 50px 20px;
+    }
+
+    h2 {
+        font-size: 28px;
+    }
+
+    p {
+        font-size: 18px;
+    }
+
+    button {
+        font-size: 16px;
+        padding: 10px 20px;
+    }
+
+    #account-actions button {
+        width: 45%;
+        margin: 5px 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .account-container {
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+
+    p {
+        font-size: 16px;
+    }
+
+    button {
+        font-size: 14px;
+        padding: 8px 16px;
+    }
+
+    #account-actions button {
+        width: 100%;
+        margin: 8px 0;
+    }
+}

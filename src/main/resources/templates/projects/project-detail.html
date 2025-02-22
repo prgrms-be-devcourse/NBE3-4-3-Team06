@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>상세 페이지</title>
+
+    <link rel="stylesheet" th:href="@{/css/detail.css}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <div th:replace="~{fragments/header :: header}"></div>
+</head>
+<body>
+<div class="project-container">
+
+    <!-- 프로젝트 메인 콘텐츠 -->
+    <div class="project-main-content">
+        <img id="projectBanner" src="" alt="Project Image">
+        <div class="project-details">
+            <div class="project-status" id="status"></div>
+            <div class="project-title" id="projectTitle"></div>
+
+            <!-- 간단한 설명 표시 -->
+            <div class="project-simple-description" id="projectSimpleDescription"></div>
+
+            <!-- 발행자 정보 -->
+            <div class="project-publisher">
+                <img src="https://via.placeholder.com/65" alt="Publisher Avatar">
+                <div class="publisher-info">
+                    <span id="creatorName"></span>
+                    <div class="project-date"><span id="startDate"></span> ~ <span id="endDate"></span></div>
+                </div>
+            </div>
+            <button class="project-support-button" onclick="openFundingModal()">후원 하기</button>
+        </div>
+    </div>
+
+    <!-- 상세 설명 -->
+    <div class="project-description-box">
+        <p id="projectDescription"></p>
+    </div>
+
+    <!-- 목표 금액 및 현재 모금액 -->
+    <div class="project-description-box">
+        <p>목표 금액: <span id="fundingGoal"></span> 원</p>
+        <p>현재 모금: <span id="currentFunding"></span> 원</p>
+    </div>
+
+    <!-- 댓글 영역 -->
+    <!-- TODO 페이징 필요? -->
+    <div class="project-comments-section">
+        <h3>댓글</h3>
+        <div class="project-write-comment">
+            <textarea id="commentInput" placeholder="150자 내외로 작성하세요."></textarea>
+            <button onclick="submitComment()">등록</button>
+        </div>
+
+        <div id="commentsList"></div>
+    </div>
+</div>
+
+<script>
+    let currentUsername = "";
+    let userRole = "";  // 전역 변수로 선언
+
+    document.addEventListener('DOMContentLoaded', function () {
+        let projectId = window.location.pathname.split('/').pop();
+        let apiUrl = `/api/projects/${projectId}`;
+
+        loadComments(); // 댓글 목록 로드
+
+        fetch(apiUrl)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById("projectTitle").innerText = data.title;
+                document.getElementById("projectBanner").src = data.bannerUrl;
+                document.getElementById("projectSimpleDescription").innerText = data.simpleDescription;
+                document.getElementById("projectDescription").innerText = data.description;
+                document.getElementById("fundingGoal").innerText = data.fundingGoal.toLocaleString();
+                document.getElementById("currentFunding").innerText = data.currentFunding.toLocaleString();
+                document.getElementById("status").innerText = data.status;
+                document.getElementById("startDate").innerText = data.startDate;
+                document.getElementById("endDate").innerText = data.endDate;
+                document.getElementById("creatorName").innerText = data.creatorName;
+            })
+            .catch(error => {
+                console.error("프로젝트 상세 불러오기 오류:", error);
+                alert("프로젝트 정보를 불러오는 중 오류가 발생했습니다.");
+            });
+
+        const accessToken = localStorage.getItem("accessToken");
+        if (accessToken) {
+            try {
+                const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
+                currentUsername = tokenPayload.sub || "";
+                userRole = tokenPayload.role || "";
+            } catch (error) {
+                console.error("JWT 디코딩 오류:", error);
+            }
+        }
+    });
+
+    function submitComment() {
+        const content = document.getElementById("commentInput").value.trim();
+        if (!content) {
+            alert("댓글 내용을 입력하세요.");
+            return;
+        }
+
+        const projectId = window.location.pathname.split('/').pop();
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+
+        fetch(`/api/comment/${projectId}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${accessToken}`
+            },
+            body: JSON.stringify({content: content})
+        })
+            .then(response => {
+                if (!response.ok) {
+                    return response.text().then(text => {
+                        const errorObj = text ? JSON.parse(text) : {};
+                        throw errorObj;
+                    });
+                }
+                return response.text().then(text => text ? JSON.parse(text) : {});
+            })
+            .then(data => {
+                // 댓글 등록 성공 시 처리
+                alert("댓글 등록에 성공했습니다!");
+                console.log("등록된 댓글:", data.data);
+                document.getElementById("commentInput").value = "";
+                loadComments();
+            })
+            .catch(error => {
+                console.error("댓글 등록 에러:", error);
+                alert("댓글 등록 중 문제가 발생했습니다: " + (error.message || error));
+            });
+    }
+
+    // 댓글 목록을 불러오는 함수
+    function loadComments() {
+        const projectId = window.location.pathname.split('/').pop();
+        fetch(`/api/comment/${projectId}`)
+            .then(response => response.json())
+            .then(apiResponse => {
+                const comments = apiResponse.data;
+                const commentsList = document.getElementById('commentsList');
+                commentsList.innerHTML = ""; // 기존 댓글 목록 초기화
+
+                if (!comments || comments.length === 0) {
+                    commentsList.innerHTML = "<p>댓글이 없습니다.</p>";
+                    return;
+                }
+
+                comments.forEach(comment => {
+                    let commentActions = "";
+                    if (currentUsername && comment.userName === currentUsername) {
+                        commentActions = `
+                        <button onclick="editComment(this)">수정</button>
+                        <button onclick="deleteComment(this)">삭제</button>
+                    `;
+                    }
+
+                    const commentElement = document.createElement("div");
+                    commentElement.classList.add("comment");
+                    commentElement.setAttribute("data-comment-id", comment.commentId);
+
+                    commentElement.innerHTML = `
+                        <img src="https://via.placeholder.com/65" alt="User Avatar">
+                        <div class="comment-content">
+                            <h4>${comment.userName || '익명'}</h4>
+                            <p>${comment.content}</p>
+                            <span class="date">${new Date(comment.updatedAt).toLocaleDateString()}</span>
+                            <div class="comment-actions">
+                                ${commentActions}
+                            </div>
+                        </div>
+                    `;
+
+                    commentsList.appendChild(commentElement);
+                });
+            })
+            .catch(error => {
+                console.error("댓글 목록 불러오기 오류:", error);
+                alert("댓글 목록을 불러오는 중 오류가 발생했습니다.");
+            });
+    }
+
+    function editComment(button) {
+        const commentElement = button.closest('.comment');
+        const commentId = commentElement.dataset.commentId;
+        const commentContentElement = commentElement.querySelector(".comment-content p");
+        const newComment = prompt("댓글 내용을 수정하세요.", commentContentElement.innerText);
+
+        if (newComment && commentId) {
+            const accessToken = localStorage.getItem("accessToken");
+            if (!accessToken) {
+                alert("로그인이 필요합니다.");
+                return;
+            }
+
+            fetch(`/api/comment/${commentId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${accessToken}`
+                },
+                body: JSON.stringify({content: newComment})
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            const errorObj = text ? JSON.parse(text) : {};
+                            throw errorObj;
+                        });
+                    }
+                    return response.text().then(text => text ? JSON.parse(text) : {});
+                })
+                .then(data => {
+                    alert("댓글 수정에 성공했습니다!");
+                    commentContentElement.innerText = newComment;
+                })
+                .catch(error => {
+                    console.error("댓글 수정 에러:", error);
+                    alert("댓글 수정 중 문제가 발생했습니다: " + (error.message || error));
+                });
+        }
+    }
+
+    function deleteComment(button) {
+        const commentElement = button.closest('.comment');
+        const commentId = commentElement.dataset.commentId;
+
+        if (confirm("댓글을 삭제하시겠습니까?") && commentId) {
+            const accessToken = localStorage.getItem("accessToken");
+            if (!accessToken) {
+                alert("로그인이 필요합니다.");
+                return;
+            }
+
+            fetch(`/api/comment/${commentId}`, {
+                method: "DELETE",
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.text().then(text => {
+                            const errorObj = text ? JSON.parse(text) : {};
+                            throw errorObj;
+                        });
+                    }
+                    return response.text().then(text => text ? JSON.parse(text) : {});
+                })
+                .then(data => {
+                    alert("댓글 삭제에 성공했습니다!");
+                    commentElement.remove();
+                })
+                .catch(error => {
+                    console.error("댓글 삭제 에러:", error);
+                    alert("댓글 삭제 중 문제가 발생했습니다: " + (error.message || error));
+                });
+        }
+    }
+
+    function openFundingModal() {
+        if (userRole !== "ROLE_SPONSOR") {
+            alert("❌ 후원자는 ROLE_SPONSOR 사용자만 가능합니다.");
+            return;
+        }
+
+        let amount = prompt("후원 금액을 입력하세요 (최소 10,000원)");
+        if (amount && parseInt(amount) >= 10000) {
+            processFunding(parseInt(amount));
+        } else {
+            alert("최소 후원 금액은 10,000원 이상이어야 합니다.");
+        }
+    }
+
+    async function processFunding(amount) {
+        const accessToken = localStorage.getItem("accessToken");
+        const projectId = window.location.pathname.split('/').pop();
+
+        try {
+            const response = await fetch(`/api/account/payment`, {
+                method: "POST",
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({projectId, amount})
+            });
+
+            if (response.ok) {
+                alert("결제에 성공했습니다.");
+                location.reload();
+            } else {
+                const result = await response.json();
+                alert("결제에 실패했습니다: " + result.message);
+            }
+        } catch (error) {
+            console.error("결제 오류:", error);
+            alert("결제 중 문제가 발생했습니다.");
+        }
+    }
+
+    function logout() {
+        localStorage.removeItem("accessToken");
+        window.location.href = "/login";
+    }
+</script>
+</body>
+</html>

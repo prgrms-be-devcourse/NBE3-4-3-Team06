@@ -1,0 +1,88 @@
+/* 전체 컨테이너 */
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+/* 프로젝트 카드 스타일 */
+.project-card {
+    background: white;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    cursor: pointer;  /* 클릭 가능하게 커서 변경 */
+    transition: transform 0.2s ease-in-out;
+}
+
+.project-card:hover {
+    transform: scale(1.02);
+}
+
+/* 프로젝트 제목 및 설명 */
+.project-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+}
+
+.project-header p {
+    margin: 5px 0 15px;
+    color: #666;
+    font-size: 14px;
+}
+
+/* 프로젝트 정보 (날짜, 장소 등) */
+.project-info {
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.info-item i {
+    margin-right: 5px;
+    color: #666;
+}
+
+/* 진행률 바 스타일 */
+.progress-container {
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    height: 5px;
+    margin: 10px 0;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #a259ff;  /* 연보라색 진행바 */
+    width: 0%;
+    transition: width 0.5s ease-in-out;
+}
+
+/* 하단 정보 (퍼센트, 모금액, 남은 일수) */
+.project-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+}
+
+.funding-percentage {
+    font-size: 18px;
+    font-weight: bold;
+    color: #a259ff;
+}
+
+.funding-amount, .goal-amount, .days-left {
+    font-size: 14px;
+    color: #333;
+}
+
+.days-left {
+    font-weight: bold;
+}

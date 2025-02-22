@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>프로젝트 생성</title>
+  <link rel="stylesheet" href="/css/new.css">
+</head>
+<body>
+
+<!-- 프로젝트 생성 버튼 -->
+<button id="open-modal-btn">프로젝트 생성</button>
+
+<!-- 모달 창 -->
+<div id="project-modal" class="modal">
+  <div class="modal-content">
+    <span id="close-modal-btn" class="close">&times;</span>
+    <h2>프로젝트 생성</h2>
+    <form id="project-form">
+      <label for="title">프로젝트 제목:</label>
+      <input type="text" id="title" name="title" required>
+
+      <label for="simpleDescription">간단한 설명:</label>
+      <input type="text" id="simpleDescription" name="simpleDescription" required>
+
+      <label for="description">설명:</label>
+      <textarea id="description" name="description"></textarea>
+
+      <label for="fundingGoal">목표 금액 (원):</label>
+      <input type="number" id="fundingGoal" name="fundingGoal" required>
+
+      <label for="bannerUrl">배너 이미지 URL:</label>
+      <input type="url" id="bannerUrl" name="bannerUrl" required>
+
+      <label for="startDate">시작 날짜:</label>
+      <input type="datetime-local" id="startDate" name="startDate" required>
+
+      <label for="endDate">종료 날짜:</label>
+      <input type="datetime-local" id="endDate" name="endDate" required>
+
+      <button type="submit">프로젝트 생성</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // 모달 열기
+  document.getElementById("open-modal-btn").onclick = function() {
+    document.getElementById("project-modal").style.display = "block";
+  }
+
+  // 모달 닫기
+  document.getElementById("close-modal-btn").onclick = function() {
+    document.getElementById("project-modal").style.display = "none";
+  }
+
+  // 프로젝트 생성 폼 제출
+  document.getElementById("project-form").addEventListener("submit", async function(event) {
+    event.preventDefault();  // 기본 제출 동작 방지
+
+    const accessToken = localStorage.getItem("accessToken");
+    if (!accessToken) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    // 사용자 입력 데이터 가져오기
+    const projectData = {
+      title: document.getElementById("title").value,
+      simpleDescription: document.getElementById("simpleDescription").value,
+      description: document.getElementById("description").value,
+      fundingGoal: parseFloat(document.getElementById("fundingGoal").value), // 숫자로 변환
+      bannerUrl: document.getElementById("bannerUrl").value,
+      startDate: document.getElementById("startDate").value + ":00", // 초까지 포함해야 할 수도 있음
+      endDate: document.getElementById("endDate").value + ":00"
+    };
+
+    try {
+      const response = await fetch("/api/beneficiary/create/projects", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${accessToken}`
+        },
+        body: JSON.stringify(projectData)
+      });
+
+      if (!response.ok) {
+        throw new Error("프로젝트 생성 실패");
+      }
+
+      const result = await response.json();
+      alert("프로젝트가 성공적으로 생성되었습니다!");
+
+      window.location.href = "/";
+
+    } catch (error) {
+      console.error("❌ 프로젝트 생성 오류:", error);
+      alert("프로젝트 생성 중 오류가 발생했습니다.");
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,248 @@
+body {
+    font-family: 'Noto Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #F0F2F1;
+}
+
+.header {
+    background: #FFFFFF;
+    position: fixed;
+    width: calc(100% - 203px);
+    height: 24px;
+    left: 203px;
+    top: 0;
+    z-index: 1000;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar {
+    position: fixed;
+    width: 203px;
+    height: 100vh;
+    background: #7D4988;
+    padding-top: 20px;
+}
+
+.sidebar button {
+    display: block;
+    width: 100%;
+    padding: 12px 24px;
+    margin: 10px 0;
+    background: #7D4988;
+    color: #FFFFFF;
+    border: none;
+    font-weight: 600;
+    font-size: 15px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.main-content {
+    margin-left: 223px;
+    padding: 120px 20px 20px;
+}
+
+/* 테이블 스타일 수정 */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+.table th,
+.table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.table th {
+    background-color: #f8f8f8;
+    color: #333;
+    font-weight: bold;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #fafafa;
+}
+
+/* 상태별 색상 */
+.status-success {
+    color: green;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.status-failed {
+    color: red;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.status-ongoing {
+    color: orange;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* 승인 상태 스타일 */
+.approval-status {
+    font-weight: bold;
+    cursor: pointer;
+}
+
+/* 버튼 스타일 */
+.btn-primary {
+    background-color: #7D4988;
+    border: none;
+    padding: 8px 16px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.btn-primary:hover {
+    background-color: #693A75;
+}
+
+/* 모달 배경 스타일 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1050;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    /* 더 진한 반투명 배경 */
+    backdrop-filter: blur(5px);
+    /* 배경 흐림 효과 */
+}
+
+/* 모달 콘텐츠 스타일 */
+.modal-content {
+    background-color: #ffffff;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 30px 25px;
+    border: none;
+    width: 80%;
+    max-width: 450px;
+    border-radius: 15px;
+    /* 더 둥근 모서리 */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    /* 더 강한 그림자 효과 */
+    animation: fadeIn 0.3s ease-in-out;
+    /* 부드러운 등장 애니메이션 */
+}
+
+/* 모달 헤더 텍스트 스타일 */
+.modal-content h2 {
+    font-size: 22px;
+    color: #333333;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #7D4988;
+    /* 하단 보더 강조 */
+    padding-bottom: 10px;
+}
+
+/* 설명 텍스트 스타일 */
+.modal-content p {
+    font-size: 15px;
+    color: #666666;
+    margin-bottom: 20px;
+}
+
+/* 닫기 버튼 스타일 */
+.close {
+    color: #888888;
+    float: right;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #ff5c5c;
+    /* 닫기 버튼에 붉은색 강조 */
+    text-decoration: none;
+}
+
+/* 드롭다운 및 버튼 스타일 */
+.modal-content select {
+    padding: 8px 12px;
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    font-size: 14px;
+    margin-right: 10px;
+}
+
+.modal-content button {
+    padding: 8px 16px;
+    background-color: #7D4988;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.modal-content button:hover {
+    background-color: #693A75;
+}
+
+/* 모달 등장 애니메이션 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+
+@media (max-width: 768px) {
+    .sidebar {
+        position: relative;
+        width: 100%;
+        height: auto;
+        padding: 10px;
+    }
+
+    .sidebar button {
+        text-align: center;
+        font-size: 14px;
+    }
+
+    .header {
+        width: 100%;
+        left: 0;
+
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 140px 10px 10px;
+    }
+}

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Jersey+25&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/signup.css}">
+    <script th:src="@{/js/signup.js}"></script>
+</head>
+
+<body>
+<div class="container">
+    <div class="logo">STARTREUM</div>
+    <form id="signupForm" th:action="@{/api/users/registrar}" method="POST">
+        <div class="form-group">
+            <label for="name">ID</label>
+            <input type="text" id="name" name="name" placeholder="ID를 입력하세요" required>
+            <div id="nameStatus" class="status"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="이메일을 입력하세요" required>
+            <div id="emailStatus" class="status"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" required>
+        </div>
+
+        <div class="form-group">
+            <label for="confirmPassword">Password 확인</label>
+            <input type="password" id="confirmPassword" placeholder="비밀번호를 입력하세요" required>
+            <div id="passwordStatus" class="status text-danger"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="role">역할</label>
+            <select id="role" name="role" required>
+                <option class ="opvalue" value="" disabled selected >역할을 선택하세요</option>
+                <option class ="opvalue" value="BENEFICIARY">수혜자</option>
+                <option class ="opvalue" value="SPONSOR">후원자</option>
+                <option class ="opvalue" value="ADMIN">관리자</option>
+            </select>
+        </div>
+
+        <button type="submit" class="register-button">회원가입</button>
+    </form>
+</div>
+
+
+</body>
+
+</html>

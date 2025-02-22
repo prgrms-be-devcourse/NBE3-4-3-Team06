@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>마이 페이지</title>
+    <link rel="stylesheet" th:href="@{/css/profile.css}">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main id="mainContent"></main>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+        const token = localStorage.getItem("accessToken");
+        const username = window.location.pathname.split("/").pop();
+
+        if (!token) {
+            alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
+            window.location.href = "/api/users/login";
+            return;
+        }
+
+        let userRole = null;
+
+        // JWT 토큰 디코딩하여 역할 확인
+        try {
+            const tokenPayload = JSON.parse(atob(token.split(".")[1]));
+            userRole = tokenPayload.role || "ROLE_UNKNOWN";
+            console.log("사용자 역할:", userRole);  // 디버깅 로그
+        } catch (error) {
+            console.error("JWT 디코딩 오류:", error);
+            alert("인증 정보 오류. 다시 로그인해주세요.");
+            window.location.href = "/api/users/login";
+            return;
+        }
+
+        try {
+            // 프로필 정보 가져오기
+            const response = await fetch(`/api/users/profile/${username}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`서버 오류: ${response.status}, ${errorText}`);
+            }
+
+            const data = await response.json();
+            console.log("프로필 데이터:", data);
+
+            if (!data.data) {
+                throw new Error("사용자 데이터가 존재하지 않습니다.");
+            }
+
+            const userInfo = data.data;
+            const mainContent = document.getElementById("mainContent");
+
+            // 기본 사용자 정보 표시
+            let profileHTML = `
+                <section class="profile-section">
+                    <div class="profile-pic">
+                        <button class="btn inquiry">문의하기</button>
+                    </div>
+                    <div class="profile-info">
+                        <h2>내 정보</h2>
+                        <p>이름: ${userInfo.name}</p>
+                        <p>Email: ${userInfo.email}</p>
+                        <p>역할: ${userInfo.role}</p>
+                        <p>가상 계좌: (${userInfo.name})</p>
+                        <button class="btn info-change">내 정보 변경하기</button>
+                        <button id="manageAccountBtn" class="btn create-account">계좌관리</button>
+                    </div>
+                </section>
+            `;
+
+            // 후원자(ROLE_SPONSOR)일 때 후원 프로젝트 현황 추가
+            if (userRole === "ROLE_SPONSOR") {
+                profileHTML += `
+                    <section class="project-status">
+                        <h2>후원 프로젝트 현황</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>프로젝트 타이틀</th>
+                                    <th>후원 금액</th>
+                                    <th>후원 일자</th>
+                                    <th>상태</th>
+                                    <th>승인여부</th>
+                                </tr>
+                            </thead>
+                            <tbody id="fundingProjects"></tbody>
+                        </table>
+                    </section>
+                `;
+            }
+
+            // 수혜자(ROLE_BENEFICIARY)일 때 '내 프로젝트 현황' 추가
+            if (userRole === "ROLE_BENEFICIARY") {
+                profileHTML += `
+                    <section class="my-projects">
+                        <h2>내 프로젝트 현황</h2>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>프로젝트 타이틀</th>
+                                    <th>목표액</th>
+                                    <th>프로젝트 생성일</th>
+                                    <th>상태</th>
+                                    <th>승인여부</th>
+                                </tr>
+                            </thead>
+                            <tbody id="myProjects"></tbody>
+                        </table>
+                    </section>
+                `;
+            }
+
+            // 나머지 섹션 추가
+            profileHTML += `
+                <section class="inquiries">
+                    <h2>내 문의 목록</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>문의 제목</th>
+                                <th>작성 일자</th>
+                                <th>수정 일자</th>
+                                <th>답변 상태</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>문의있습니다. 1</td>
+                                <td>2025.02.08</td>
+                                <td>2025.02.09</td>
+                                <td>답변 완료</td>
+                            </tr>
+                            <tr>
+                                <td>문의있습니다. 2</td>
+                                <td>2025.02.08</td>
+                                <td>2025.02.08</td>
+                                <td>대기중</td>
+                                <td>
+                                    <button class="btn edit">수정</button>
+                                    <button class="btn cancel">취소</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+            `;
+
+            mainContent.innerHTML = profileHTML;
+
+            // 계좌 관리 버튼 이벤트 리스너 추가
+            const manageAccountBtn = document.getElementById("manageAccountBtn");
+            if (manageAccountBtn) {
+                manageAccountBtn.addEventListener("click", function () {
+                    window.location.href = `/profile/account/${username}`;
+                });
+            } else {
+                console.error("계좌 관리 버튼을 찾을 수 없습니다.");
+            }
+
+            // 후원자일 경우 후원 데이터 불러오기
+            if (userRole === "ROLE_SPONSOR") {
+                const fundingResponse = await fetch(`/api/users/fundings/${username}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!fundingResponse.ok) {
+                    const errorText = await fundingResponse.text();
+                    throw new Error(`서버 오류: ${fundingResponse.status}, ${errorText}`);
+                }
+
+                const fundingData = await fundingResponse.json();
+                console.log("후원 프로젝트 데이터:", fundingData);
+
+                const fundingProjects = document.getElementById("fundingProjects");
+                fundingProjects.innerHTML = '';
+
+                fundingData.data.forEach(funding => {
+                    const row = `
+                        <tr>
+                            <td>${funding.projectTitle}</td>
+                            <td>${funding.fundingAmount ? funding.fundingAmount.toLocaleString() : '0'}원</td>
+                            <td>${funding.fundedAt ? new Date(funding.fundedAt).toISOString().split('T')[0] : 'N/A'}</td>
+                            <td>${funding.status === 'SUCCESS' ? '성공' : funding.status === 'FAILED' ? '실패' : '진행중'}</td>
+                            <td>${funding.transactionStatus || 'N/A'}</td>
+                        </tr>
+                    `;
+                    fundingProjects.insertAdjacentHTML('beforeend', row);
+                });
+            }
+
+            // 수혜자일 경우 생성한 프로젝트 데이터 불러오기
+            if (userRole === "ROLE_BENEFICIARY") {
+                const projectsResponse = await fetch(`/api/users/projects/${username}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!projectsResponse.ok) {
+                    const errorText = await projectsResponse.text();
+                    throw new Error(`서버 오류: ${projectsResponse.status}, ${errorText}`);
+                }
+
+                const projectsData = await projectsResponse.json();
+                console.log("내 프로젝트 데이터:", projectsData);
+
+                const myProjects = document.getElementById("myProjects");
+                myProjects.innerHTML = '';
+
+                projectsData.data.forEach(project => {
+                    const row = `
+                        <tr>
+                            <td>${project.title}</td>
+                            <td>${project.fundingGoal ? project.fundingGoal.toLocaleString() : '0'}원</td>
+                            <td>${new Date(project.createdAt).toISOString().split('T')[0]}</td>
+                            <td>${project.status === 'SUCCESS' ? '성공' : project.status === 'FAILED' ? '실패' : '진행중'}</td>
+                            <td>${project.isApproved === 'APPROVE' ? '승인' : project.isApproved === 'REJECTED' ? '거절' : '승인대기'}</td>
+                            <td>
+                                <button class="btn edit">수정</button>
+                                <button class="btn cancel">취소</button>
+                            </td>
+                        </tr>
+                    `;
+                    myProjects.insertAdjacentHTML('beforeend', row);
+                });
+            }
+
+        } catch (error) {
+            console.error("에러 발생:", error);
+            alert("프로필 정보를 불러오는 데 실패했습니다. 오류: " + error.message);
+        }
+    });
+</script>
+</body>
+</html>

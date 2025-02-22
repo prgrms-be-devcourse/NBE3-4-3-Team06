@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Jersey+25&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+
+</head>
+
+<body>
+<div class="container">
+    <div class="logo">STARTREUM</div>
+    <!-- 기본 폼 제출 방지를 위해 action 속성을 #로 변경 -->
+    <form id="loginForm" action="#">
+        <div class="form-group">
+            <label for="name">ID</label>
+            <input type="text" id="name" name="name" placeholder="ID를 입력하세요" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" required>
+        </div>
+
+        <button type="submit" class="login-button">로그인</button>
+
+        <div class="text-center">
+            <a href="/api/users/signup">회원가입</a> |
+            <a href="/">홈으로</a>
+        </div>
+    </form>
+</div>
+<script th:src="@{/js/login.js}"></script>
+</body>
+
+</html>

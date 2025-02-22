@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로젝트 관리 - 관리자</title>
+    <link rel="stylesheet" th:href="@{/css/admin_project.css}">
+
+</head>
+<body>
+<div class="admin-page">
+<!-- Sidebar -->
+<div class="sidebar">
+    <button onclick="location.href='#'">회원 관리</button>
+    <button onclick="location.href='/admin/project'">프로젝트 관리</button>
+    <button onclick="location.href='#'">송금 및 환불</button>
+    <button onclick="location.href='#'">문의 관리</button>
+</div>
+
+
+<!-- Header -->
+<div class="header">
+    <div class="header" th:replace="~{fragments/header :: header}"></div>
+</div>
+
+<!-- 프로젝트 관리 섹션 -->
+<section class="main-content container py-5">
+    <h1 class="fw-bold mb-4 text-center">프로젝트 관리</h1>
+
+    <!-- 상태 필터링 -->
+    <div class="mb-3 text-center">
+        <label for="statusFilter" class="form-label">승인 상태 선택:</label>
+        <select id="statusFilter" class="form-select w-auto d-inline-block">
+            <option value="">전체</option>
+            <option value="APPROVE">승인됨</option>
+            <option value="AWAITING_APPROVAL">승인 대기중</option>
+            <option value="REJECTED">거절됨</option>
+        </select>
+        <button class="btn btn-primary" onclick="loadProjects()">조회</button>
+    </div>
+
+    <!-- 프로젝트 리스트 -->
+    <table class="table table-striped table-hover">
+        <thead class="table-dark text-center">
+        <tr>
+            <th>프로젝트 ID</th>
+            <th>제목</th>
+            <th>상태</th>
+            <th>승인</th>
+            <th>목표 금액</th>
+            <th>현재 모집 금액</th>
+            <th>시작일</th>
+            <th>종료일</th>
+        </tr>
+        </thead>
+        <tbody id="project-list">
+        <!-- JavaScript로 데이터 동적 추가 -->
+        </tbody>
+    </table>
+</section>
+
+<!-- 상태 변경 모달 -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeEditModal()">&times;</span>
+        <h2>프로젝트 상태 변경</h2>
+        <p>승인 상태 및 진행 상태를 변경할 수 있습니다.</p>
+
+        <label for="modalApprovalStatus">승인 상태:</label>
+        <select id="modalApprovalStatus" class="form-select">
+            <option value="APPROVE">승인</option>
+            <option value="AWAITING_APPROVAL">대기중</option>
+            <option value="REJECTED">거절</option>
+        </select>
+
+        <label for="modalProjectStatus">진행 상태:</label>
+        <select id="modalProjectStatus" class="form-select">
+            <option value="ONGOING">진행중</option>
+            <option value="SUCCESS">성공</option>
+            <option value="FAILED">실패</option>
+        </select>
+
+        <button class="btn btn-success mt-2" onclick="updateProjectStatus()">저장</button>
+    </div>
+</div>
+</div>
+<script>
+    const statusTranslations = {
+        "ONGOING": "진행중",
+        "SUCCESS": "성공",
+        "FAILED": "실패"
+    };
+
+    const approvalStatusTranslations = {
+        "AWAITING_APPROVAL": "승인 대기",
+        "APPROVE": "승인",
+        "REJECTED": "거절"
+    };
+
+    async function loadProjects() {
+        const status = document.getElementById("statusFilter").value;
+        let url = "/api/admin/projects";
+        if (status) {
+            url += `?status=${status}`;
+        }
+
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+
+        try {
+            const response = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP 오류! 상태 코드: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const projectList = document.getElementById("project-list");
+            projectList.innerHTML = "";
+
+            data.forEach(project => {
+                const startDate = new Date(project.startDate).toISOString().split("T")[0];
+                const endDate = new Date(project.endDate).toISOString().split("T")[0];
+                const statusClass = project.status === "SUCCESS" ? 'status-success' :
+                                    project.status === "FAILED" ? 'status-failed' : 'status-ongoing';
+
+                projectList.innerHTML += `
+                    <tr class="text-center">
+                        <td>${project.projectId.toString().padStart(6, '0')}</td>
+                        <td>${project.title}</td>
+                        <td class="${statusClass}" onclick="openEditModal(${project.projectId})">${statusTranslations[project.status]}</td>
+                        <td class="approval-status" onclick="openEditModal(${project.projectId})">${approvalStatusTranslations[project.isApproved]}</td>
+                        <td>${project.fundingGoal.toLocaleString()} 원</td>
+                        <td>${project.currentFunding.toLocaleString()} 원</td>
+                        <td>${startDate}</td>
+                        <td>${endDate}</td>
+                    </tr>
+                `;
+            });
+        } catch (error) {
+            console.error("프로젝트 불러오기 오류:", error);
+            alert("프로젝트를 불러오는 중 오류가 발생했습니다.");
+        }
+    }
+
+    let selectedProjectId = null;
+
+    function openEditModal(projectId) {
+        selectedProjectId = projectId;
+        document.getElementById("editModal").style.display = "block";
+        window.scrollTo(0, 0);  // 모달 열릴 때 스크롤 상단으로 이동
+    }
+
+    function closeEditModal() {
+        document.getElementById("editModal").style.display = "none";
+    }
+
+    async function updateProjectStatus() {
+        if (!selectedProjectId) return;
+
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) {
+            alert("로그인이 필요합니다.");
+            return;
+        }
+
+        const updateData = {
+            isApproved: document.getElementById("modalApprovalStatus").value,
+            status: document.getElementById("modalProjectStatus").value
+        };
+
+        try {
+            const response = await fetch(`/api/admin/projects/${selectedProjectId}/update`, {
+                method: "PATCH",
+                headers: {
+                    "Authorization": `Bearer ${accessToken}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(updateData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP 오류! 상태 코드: ${response.status}`);
+            }
+
+            alert("✅ 프로젝트 상태가 변경되었습니다.");
+            closeEditModal();
+            loadProjects();
+        } catch (error) {
+            console.error("프로젝트 상태 변경 오류:", error);
+            alert("상태 변경 중 오류가 발생했습니다.");
+        }
+    }
+</script>
+
+</body>
+</html>

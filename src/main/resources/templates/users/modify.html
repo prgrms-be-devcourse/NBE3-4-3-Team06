@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>프로필 수정</title>
+    <link rel="stylesheet" href="/css/profile.css">
+</head>
+<body>
+<div class="modify-container">
+    <h2>프로필 수정</h2>
+    <p><strong>사용자 ID:</strong> <span id="userName"></span></p>
+    <p><strong>이메일:</strong> <input type="email" class="form-control" id="editUserEmail" required></p>
+    <p><strong>역할:</strong> <span id="userRole"></span></p>
+    <p><strong>가입일:</strong> <span id="userCreatedAt"></span></p>
+    <p><strong>최근 수정일:</strong> <span id="userUpdatedAt"></span></p>
+
+    <form id="modifyForm">
+        <button type="submit" class="btn btn-success">저장</button>
+        <button type="button" onclick="window.close();" class="btn btn-secondary">닫기</button>
+    </form>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async function () {
+        const username = decodeURIComponent(window.location.pathname.split("/").slice(-1)[0]);
+        const token = localStorage.getItem("accessToken");
+
+        if (!token) {
+            alert("로그인이 필요합니다.");
+            window.close();
+            return;
+        }
+tus
+
+        try {
+            console.log(`📌 사용자 정보 요청: /api/users/profile/${username}`);
+
+            const response = await fetch(`/api/users/profile/${username}`, {
+                method: "GET",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error("사용자 정보를 불러올 수 없음");
+            }
+
+            const data = await response.json();
+            console.log("📌 받은 사용자 데이터:", data);
+
+            document.getElementById("userName").textContent = data.data.name;
+            document.getElementById("editUserEmail").value = data.data.email;
+            document.getElementById("userRole").textContent = data.data.role;
+            document.getElementById("userCreatedAt").textContent = new Date(data.data.createdAt).toISOString().split("T")[0];
+            document.getElementById("userUpdatedAt").textContent = new Date(data.data.updatedAt).toISOString().split("T")[0];
+
+        } catch (error) {
+            console.error("사용자 정보 불러오기 오류:", error);
+            alert("사용자 정보를 불러오는 데 실패했습니다.");
+            window.close();
+        }
+    });
+
+    document.getElementById("modifyForm").addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const username = decodeURIComponent(window.location.pathname.split("/").slice(-1)[0]);
+        const updatedEmail = document.getElementById("editUserEmail").value;
+        const token = localStorage.getItem("accessToken");
+
+        if (!updatedEmail.trim()) {
+            alert("이메일을 입력하세요.");
+            return;
+        }
+
+        try {
+            console.log("업데이트 요청 데이터:", JSON.stringify({ newEmail: updatedEmail })); // 디버깅용 로그
+
+            const response = await fetch(`/api/users/profile/modify/${username}`, {
+                method: "PUT",
+                headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ newEmail: updatedEmail })  // JSON 필드명 수정
+            });
+
+            if (!response.ok) {
+                let errorMessage = "이메일 업데이트 실패";
+                try {
+                    const errorData = await response.json();
+                    errorMessage = errorData.message || errorMessage;
+                } catch (jsonError) {
+                    console.warn("⚠️ 서버 응답이 JSON이 아닙니다.");
+                }
+                throw new Error(errorMessage);
+            }
+
+            let successMessage = "이메일이 성공적으로 수정되었습니다.";
+            try {
+                const responseData = await response.json();
+                successMessage = responseData.message || successMessage;
+            } catch (jsonError) {
+                console.warn("⚠️ 서버 응답이 JSON이 아닙니다. 성공 메시지 기본값 사용.");
+            }
+
+            alert(successMessage);
+            window.opener.location.reload();  // 부모창 새로고침
+            window.close();
+        } catch (error) {
+            console.error("업데이트 오류:", error);
+            alert(`업데이트 중 오류가 발생했습니다: ${error.message}`);
+        }
+    });
+</script>
+</body>
+</html>

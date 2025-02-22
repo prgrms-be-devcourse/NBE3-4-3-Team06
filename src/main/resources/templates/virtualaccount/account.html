@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>계좌 관리</title>
+    <link rel="stylesheet" th:href="@{/css/account.css}">
+</head>
+<body>
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<div class="account-container">
+    <h2>계좌 관리</h2>
+
+    <!-- 사용자 정보 -->
+    <p><strong>사용자 ID:</strong> <span id="username" th:text="${name}" th:attr="data-user-name=${name}"></span>
+    </p>
+
+    <!-- 계좌 조회 버튼 -->
+    <button id="fetch-account-btn">계좌 조회</button>
+    <button id="create-account-btn" style="display: none;" onclick="createAccount()">계좌 생성</button>
+
+    <!-- 계좌 정보 (초기에는 숨김) -->
+    <div id="account-info" style="display: none;">
+<!--        <p><strong>사용자 ID:</strong> <span id="account-username"></span></p>-->
+        <p><strong>계좌 잔액:</strong> <span id="account-balance"></span> 원</p>
+<!--        <p><strong>펀딩 차단 여부:</strong> <span id="funding-status"></span></p>-->
+    </div>
+
+    <!-- 계좌 관련 버튼 (초기에는 숨김) -->
+    <div id="account-actions" style="display: none; margin-top: 20px;">
+        <button id="chargeBtn">충전하기</button>
+        <button id="payBtn">결제하기</button>
+        <button id="refundBtn">환불하기</button>
+    </div>
+</div>
+
+<script>
+    document.getElementById("fetch-account-btn").addEventListener("click", async function () {
+
+     const userNameElement = document.getElementById("username");
+     const userName = userNameElement ? userNameElement.getAttribute("data-user-name") : "unknown";
+
+     console.log("🔍 JavaScript에서 userName 값:", userName);
+
+     if (!userName || userName === "unknown") {
+         alert("사용자 정보를 불러올 수 없습니다.");
+         return;
+     }
+
+     const apiUrl = `/api/account/user/${userName}`;
+     console.log(`📌 요청 URL: ${apiUrl}`);
+
+     const accessToken = localStorage.getItem("accessToken");
+     console.log("🔍 JWT 토큰:", accessToken);
+
+     if (!accessToken) {
+         alert("로그인이 필요합니다.");
+         return;
+     }
+
+     try {
+         const response = await fetch(apiUrl, {
+             method: "GET",
+             headers: {
+                 "Authorization": `Bearer ${accessToken}`,
+                 "Content-Type": "application/json"
+             }
+         });
+
+         console.log("📌 API 응답 상태 코드:", response.status);
+
+         if (!response.ok) {
+             console.error(`❌ 계좌 정보 요청 실패: ${response.status}`);
+             alert("계좌 정보를 불러올 수 없습니다.");
+             return;
+         }
+
+         const data = await response.json();
+         console.log("✅ 계좌 정보:", data);
+
+         if (!data.accountExists) {
+             document.getElementById("create-account-btn").style.display = "block";
+             alert("계좌가 없습니다. 새로 생성하세요.");
+         } else {
+             document.getElementById("account-info").style.display = "block";
+             <!--document.getElementById("account-username").innerText = data.username;-->
+             document.getElementById("account-balance").innerText = data.balance;
+             <!--document.getElementById("funding-status").innerText = data.fundingBlocked ? "차단됨" : "활성화됨";-->
+             <!--document.getElementById("funding-status").style.color = data.fundingBlocked ? "red" : "green";-->
+             document.getElementById("account-actions").style.display = "block";
+         }
+     } catch (error) {
+         console.error("❌ API 호출 오류:", error);
+         alert("계좌 정보를 불러오는 중 오류가 발생했습니다.");
+     }
+ });
+
+     async function createAccount() {
+         console.log("🔍 계좌 생성 요청!");
+
+         const accessToken = localStorage.getItem("accessToken");
+         const userNameElement = document.getElementById("username");
+         const userName = userNameElement ? userNameElement.getAttribute("data-user-name") : "unknown";
+
+         if (!accessToken) {
+             alert("로그인이 필요합니다.");
+             return;
+         }
+
+         try {
+             const response = await fetch(`/api/account/user/${userName}/create`, {
+
+                 method: "POST",
+                 headers: {
+                     "Authorization": `Bearer ${accessToken}`,
+                     "Content-Type": "application/json"
+                 }
+             });
+
+             const newAccount = await response.json();
+
+             if (response.ok) {
+                 alert("계좌가 생성되었습니다!");
+                 location.reload(); // 새로고침하여 계좌 정보 반영
+             } else {
+                 alert("계좌 생성 실패: " + newAccount.message);
+             }
+         } catch (error) {
+             console.error("❌ 계좌 생성 중 오류 발생:", error);
+             alert("계좌 생성에 실패했습니다.");
+         }
+     }
+
+     document.getElementById("chargeBtn").addEventListener("click", async function () {
+         let amountInput = prompt("충전 금액을 입력하세요");
+         if (!amountInput) {
+             return; // 입력 취소한 경우
+         }
+
+         // 입력받은 문자열을 숫자로 변환 후 유효성 체크
+         const amount = parseInt(amountInput, 10);
+         if (isNaN(amount) || amount < 1000) {
+             alert("최소 10,00원 이상의 금액을 입력해주세요.");
+             return;
+         }
+
+         const accessToken = localStorage.getItem("accessToken");
+         if (!accessToken) {
+             alert("로그인이 필요합니다.");
+             return;
+         }
+
+         const apiUrl = `/api/account`;
+         console.log(`충전 시작: ${apiUrl}`);
+
+         try {
+             const response = await fetch(apiUrl, {
+                 method: "POST",
+                 headers: {
+                     "Authorization": `Bearer ${accessToken}`,
+                     "Content-Type": "application/json"
+                 },
+                 body: JSON.stringify({ amount })
+             });
+
+             const result = await response.json();
+
+             if (response.ok) {
+                 alert("계좌 충전에 성공했습니다.");
+                 location.reload();
+             } else {
+                 alert("계좌 충전 실패: " + result.message);
+             }
+         } catch (error) {
+             console.error("충전 API 호출 오류:", error);
+             alert("계좌 충전 중 오류가 발생했습니다.");
+         }
+
+
+
+
+     });
+
+</script>
+
+</body>
+</html>

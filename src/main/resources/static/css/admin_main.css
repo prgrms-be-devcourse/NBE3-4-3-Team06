@@ -1,0 +1,186 @@
+ body {
+            font-family: 'Noto Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #F0F2F1;
+        }
+
+        .header {
+            background: #FFFFFF;
+            position: fixed;
+            width: calc(100% - 203px);
+            height: 24px;
+            left: 203px;
+            top: 0;
+            z-index: 1000;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar {
+            position: fixed;
+            width: 203px;
+            height: 100vh;
+            background: #7D4988;
+            padding-top: 20px;
+        }
+
+        .sidebar button {
+            display: block;
+            width: 100%;
+            padding: 12px 24px;
+            margin: 10px 0;
+            background: #7D4988;
+            color: #FFFFFF;
+            border: none;
+            font-weight: 600;
+            font-size: 15px;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .main-content {
+            margin-left: 223px;
+            padding: 120px 20px 20px; /* 헤더 공간 확보 */
+        }
+
+        .card {
+            background: #FFFFFF;
+            box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.25);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .card h2 {
+            font-size: 20px;
+            color: #6A6A6A;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border-bottom: 1px solid #B3B3B3;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #F0F2F1;
+            color: #6A6A6A;
+            font-weight: 600;
+        }
+
+        .status-success { color: green; }
+        .status-fail { color: red; }
+        .status-pending { color: orange; }
+
+        .btn-action {
+            background: #7D4988;
+            color: #FFFFFF;
+            border-radius: 16px;
+            padding: 5px 15px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+          /* 반응형 스타일 */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+                padding: 10px;
+            }
+
+            .sidebar button {
+                text-align: center;
+                font-size: 14px;
+            }
+
+            .header {
+                width: 100%;
+                left: 0;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 140px 10px 10px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+
+            .card {
+                padding: 15px;
+            }
+
+            .btn-action {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            tr {
+                border: 1px solid #ccc;
+                margin-bottom: 10px;
+            }
+
+            td {
+                border: none;
+                position: relative;
+                padding-left: 50%;
+                text-align: left;
+            }
+
+            td:before {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                font-weight: bold;
+            }
+
+            td:nth-of-type(1):before { content: "회원 ID"; }
+            td:nth-of-type(2):before { content: "이메일"; }
+            td:nth-of-type(3):before { content: "이름"; }
+            td:nth-of-type(4):before { content: "역할"; }
+            td:nth-of-type(5):before { content: "가입일"; }
+
+            td:nth-of-type(1):before { content: "프로젝트 ID"; }
+            td:nth-of-type(2):before { content: "제목"; }
+            td:nth-of-type(3):before { content: "상태"; }
+            td:nth-of-type(4):before { content: "승인"; }
+            td:nth-of-type(5):before { content: "목표액"; }
+            td:nth-of-type(6):before { content: "현재 모집금액"; }
+            td:nth-of-type(7):before { content: "시작일"; }
+            td:nth-of-type(8):before { content: "종료일"; }
+            td:nth-of-type(9):before { content: "수정일"; }
+            td:nth-of-type(10):before { content: "생성일"; }
+        }

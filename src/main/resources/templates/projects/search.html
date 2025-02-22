@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>프로젝트 검색</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" th:href="@{/css/search.css}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<!-- Header -->
+<div th:replace="~{fragments/header :: header}"></div>
+
+<!-- Search Bar -->
+<div th:replace="~{fragments/searchbar :: search}"></div>
+
+<!-- Search Results -->
+<div class="container mt-5">
+  <h2>검색 결과</h2>
+  <div id="searchResults" class="results-grid"></div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    let urlParams = new URLSearchParams(window.location.search);
+    let query = urlParams.get('query')?.trim();
+    let status = urlParams.get('status')?.trim() || '';
+
+    let apiUrl = query ?
+        `/api/projects/search?query=${encodeURIComponent(query)}&status=${encodeURIComponent(status)}` :
+        `/api/projects/search`;
+
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            let results = document.getElementById('searchResults');
+            results.innerHTML = '';
+
+            if (!data.data || data.data.length === 0) {
+                results.innerHTML = '<li>검색 결과가 없습니다.</li>';
+                return;
+            }
+
+            data.data.forEach(project => {
+                let fundingPercentage = ((project.currentFunding / project.fundingGoal) * 100).toFixed(1);
+                let daysLeft = project.daysLeft !== undefined ? project.daysLeft : '알 수 없음';
+                let projectDate = project.startDate && project.endDate ? `${project.startDate} ~ ${project.endDate}` : '일자 정보 없음';
+                let projectLocation = project.location || '위치 정보 없음';
+                let projectDescription = project.simpleDescription || '정보 없음';
+
+                let projectElement = document.createElement('div');
+                projectElement.classList.add('project-card');
+
+                projectElement.addEventListener('click', () => {
+                    window.location.href = `/projects/${project.projectId}`;
+                });
+
+                projectElement.innerHTML = `
+                    <div class="project-header">
+                        <h3>${project.title}</h3>
+                        <p>${projectDescription}</p>
+                    </div>
+
+                    <div class="project-info">
+                        <div class="info-item">
+                            <i class="fa fa-calendar"></i> ${projectDate}
+                        </div>
+                        <div class="info-item">
+                            <!--<i class="fa fa-map-marker-alt"></i> ${projectLocation}-->
+                        </div>
+                    </div>
+
+                    <div class="progress-container">
+                        <div class="progress-bar" style="width: ${fundingPercentage}%;"></div>
+                    </div>
+
+                    <div class="project-footer">
+                        <div class="funding-percentage">${fundingPercentage}%</div>
+                        <div class="funding-amount">${project.currentFunding.toLocaleString()}원</div>
+                        <div class="days-left"><strong>${daysLeft}일 남음</strong></div>
+                        <div class="goal-amount">목표액: ${project.fundingGoal.toLocaleString()}원</div>
+                    </div>
+                `;
+
+                results.appendChild(projectElement);
+            });
+        })
+        .catch(error => {
+            console.error('검색 오류:', error);
+            alert('검색 중 오류가 발생했습니다.');
+        });
+  });
+
+  function getStatusText(status) {
+      switch (status) {
+          case 'ONGOING': return '진행중';
+          case 'SUCCESS': return '성공';
+          case 'FAILED': return '실패';
+          default: return status;
+      }
+  }
+
+  function getStatusClass(status) {
+      switch (status) {
+          case 'ONGOING': return 'status-ongoing';
+          case 'SUCCESS': return 'status-success';
+          case 'FAILED': return 'status-failed';
+          default: return '';
+      }
+  }
+</script>
+</body>
+</html>

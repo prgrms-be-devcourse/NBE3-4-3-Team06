@@ -1,0 +1,14 @@
+<div th:fragment="search">
+  <!-- 스타일 및 스크립트 연결 -->
+  <link rel="stylesheet" th:href="@{/css/searchbar.css?v=2}">
+  <script th:src="@{/js/searchbar.js}"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <!-- 검색창 -->
+  <form id="globalSearchForm" action="/projects/search" method="GET">
+    <input id="globalQuery" type="search" name="query" placeholder="" aria-label="Search">
+    <button id="searchButton" type="submit">
+      🔍 <!-- 돋보기 아이콘 -->
+    </button>
+  </form>
+</div>
