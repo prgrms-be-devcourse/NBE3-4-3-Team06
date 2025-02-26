@@ -1,6 +1,6 @@
-package Funding.Startreum.domain.users;
+package funding.startreum.domain.users;
 
-import Funding.Startreum.common.util.JwtUtil;
+import funding.startreum.common.util.JwtUtil;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;

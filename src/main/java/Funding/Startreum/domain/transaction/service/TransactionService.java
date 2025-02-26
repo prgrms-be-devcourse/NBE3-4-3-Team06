@@ -1,10 +1,10 @@
-package Funding.Startreum.domain.transaction.service;
+package funding.startreum.domain.transaction.service;
 
-import Funding.Startreum.domain.funding.entity.Funding;
-import Funding.Startreum.domain.transaction.entity.Transaction;
-import Funding.Startreum.domain.transaction.repository.TransactionRepository;
-import Funding.Startreum.domain.users.UserRepository;
-import Funding.Startreum.domain.virtualaccount.entity.VirtualAccount;
+import funding.startreum.domain.funding.entity.Funding;
+import funding.startreum.domain.transaction.entity.Transaction;
+import funding.startreum.domain.transaction.repository.TransactionRepository;
+import funding.startreum.domain.users.UserRepository;
+import funding.startreum.domain.virtualaccount.entity.VirtualAccount;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

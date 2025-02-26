@@ -1,4 +1,4 @@
-package Funding.Startreum.domain.project.dto;
+package funding.startreum.domain.project.dto;
 
 import jakarta.validation.constraints.NotNull;
 

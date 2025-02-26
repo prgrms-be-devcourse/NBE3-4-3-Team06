@@ -1,10 +1,10 @@
-package Funding.Startreum.domain.admin;
+package funding.startreum.domain.admin;
 
-import Funding.Startreum.domain.funding.entity.Funding;
-import Funding.Startreum.domain.project.entity.Project;
-import Funding.Startreum.domain.transaction.entity.Transaction;
-import Funding.Startreum.domain.transaction.repository.TransactionRepository;
-import Funding.Startreum.domain.virtualaccount.entity.VirtualAccount;
+import funding.startreum.domain.funding.entity.Funding;
+import funding.startreum.domain.project.entity.Project;
+import funding.startreum.domain.transaction.entity.Transaction;
+import funding.startreum.domain.transaction.repository.TransactionRepository;
+import funding.startreum.domain.virtualaccount.entity.VirtualAccount;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -19,14 +19,14 @@ public class ProjectAdminService {
 
     private final ProjectAdminRepository projectAdminRepository;
     private final EntityManager entityManager;
-    private final FundingFindRepository fundingFindRepository;
+    private final funding.startreum.domain.admin.FundingFindRepository fundingFindRepository;
     private final TransactionRepository transactionRepository;
-    private final VirtualAccountFindRepository vrtualAccountFindRepository;
-    private final TransactionFindRepository transactionFindRepository;
+    private final funding.startreum.domain.admin.VirtualAccountFindRepository vrtualAccountFindRepository;
+    private final funding.startreum.domain.admin.TransactionFindRepository transactionFindRepository;
 
     public ProjectAdminService(ProjectAdminRepository projectAdminRepository, EntityManager entityManager,
-                               FundingFindRepository fundingFindRepository, TransactionRepository transactionRepository,
-                               VirtualAccountFindRepository vrtualAccountFindRepository, TransactionFindRepository transactionFindRepository) {
+                               funding.startreum.domain.admin.FundingFindRepository fundingFindRepository, TransactionRepository transactionRepository,
+                               funding.startreum.domain.admin.VirtualAccountFindRepository vrtualAccountFindRepository, funding.startreum.domain.admin.TransactionFindRepository transactionFindRepository) {
         this.projectAdminRepository = projectAdminRepository;
         this.entityManager = entityManager;
         this.fundingFindRepository = fundingFindRepository;
@@ -158,7 +158,7 @@ public class ProjectAdminService {
      * 관리자용 상태 변경 (승인 및 진행 상태 모든 변경 가능)
      */
     @Transactional
-    public void updateProject(Integer projectId, ProjectAdminUpdateDto updateDto) {
+    public void updateProject(Integer projectId, funding.startreum.domain.admin.ProjectAdminUpdateDto updateDto) {
         if (updateDto.getIsApproved() != null) {
             updateApprovalStatus(projectId, updateDto.getIsApproved());
         }

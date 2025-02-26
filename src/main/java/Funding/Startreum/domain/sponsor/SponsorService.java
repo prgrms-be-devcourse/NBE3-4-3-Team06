@@ -1,11 +1,11 @@
-package Funding.Startreum.domain.sponsor;
+package funding.startreum.domain.sponsor;
 
-import Funding.Startreum.domain.funding.repository.FundingRepository;
+import funding.startreum.domain.funding.repository.FundingRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import Funding.Startreum.domain.funding.entity.Funding;
+import funding.startreum.domain.funding.entity.Funding;
 import org.springframework.stereotype.Service;
 
 @Service

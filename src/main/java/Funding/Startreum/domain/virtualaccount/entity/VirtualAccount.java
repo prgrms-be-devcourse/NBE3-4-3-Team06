@@ -1,6 +1,6 @@
-package Funding.Startreum.domain.virtualaccount.entity;
+package funding.startreum.domain.virtualaccount.entity;
 
-import Funding.Startreum.domain.users.User;
+import funding.startreum.domain.users.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,13 +1,13 @@
-package Funding.Startreum.domain.reward.service;
+package funding.startreum.domain.reward.service;
 
 
-import Funding.Startreum.domain.project.entity.Project;
-import Funding.Startreum.domain.project.repository.ProjectRepository;
-import Funding.Startreum.domain.reward.dto.request.RewardRequest;
-import Funding.Startreum.domain.reward.dto.request.RewardUpdateRequest;
-import Funding.Startreum.domain.reward.dto.response.RewardResponse;
-import Funding.Startreum.domain.reward.entity.Reward;
-import Funding.Startreum.domain.reward.repository.RewardRepository;
+import funding.startreum.domain.project.entity.Project;
+import funding.startreum.domain.project.repository.ProjectRepository;
+import funding.startreum.domain.reward.dto.request.RewardRequest;
+import funding.startreum.domain.reward.dto.request.RewardUpdateRequest;
+import funding.startreum.domain.reward.dto.response.RewardResponse;
+import funding.startreum.domain.reward.entity.Reward;
+import funding.startreum.domain.reward.repository.RewardRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static Funding.Startreum.domain.reward.dto.response.RewardResponse.FromReward;
+import static funding.startreum.domain.reward.dto.response.RewardResponse.FromReward;
 
 /**
  * <h2>RewardService 클래스</h2>

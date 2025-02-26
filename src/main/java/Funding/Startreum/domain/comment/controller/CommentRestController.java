@@ -1,9 +1,9 @@
-package Funding.Startreum.domain.comment.controller;
+package funding.startreum.domain.comment.controller;
 
-import Funding.Startreum.common.util.ApiResponse;
-import Funding.Startreum.domain.comment.dto.request.CommentRequest;
-import Funding.Startreum.domain.comment.dto.response.CommentResponse;
-import Funding.Startreum.domain.comment.service.CommentService;
+import funding.startreum.common.util.ApiResponse;
+import funding.startreum.domain.comment.dto.request.CommentRequest;
+import funding.startreum.domain.comment.dto.response.CommentResponse;
+import funding.startreum.domain.comment.service.CommentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

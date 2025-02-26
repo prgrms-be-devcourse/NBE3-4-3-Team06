@@ -1,14 +1,14 @@
-package Funding.Startreum.domain.project.service;
+package funding.startreum.domain.project.service;
 
 
-import Funding.Startreum.common.util.JwtUtil;
-import Funding.Startreum.domain.project.dto.*;
-import Funding.Startreum.domain.project.entity.Project;
-import Funding.Startreum.domain.project.repository.ProjectRepository;
-import Funding.Startreum.domain.reward.entity.Reward;
-import Funding.Startreum.domain.reward.repository.RewardRepository;
-import Funding.Startreum.domain.users.User;
-import Funding.Startreum.domain.users.UserRepository;
+import funding.startreum.common.util.JwtUtil;
+import funding.startreum.domain.project.dto.*;
+import funding.startreum.domain.project.entity.Project;
+import funding.startreum.domain.project.repository.ProjectRepository;
+import funding.startreum.domain.reward.entity.Reward;
+import funding.startreum.domain.reward.repository.RewardRepository;
+import funding.startreum.domain.users.User;
+import funding.startreum.domain.users.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

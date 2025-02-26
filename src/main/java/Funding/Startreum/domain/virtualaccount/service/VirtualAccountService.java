@@ -1,27 +1,27 @@
-package Funding.Startreum.domain.virtualaccount.service;
+package funding.startreum.domain.virtualaccount.service;
 
 
-import Funding.Startreum.domain.funding.entity.Funding;
-import Funding.Startreum.domain.funding.service.FundingService;
-import Funding.Startreum.domain.project.entity.Project;
-import Funding.Startreum.domain.project.repository.ProjectRepository;
-import Funding.Startreum.domain.project.service.ProjectService;
-import Funding.Startreum.domain.transaction.entity.Transaction;
-import Funding.Startreum.domain.transaction.repository.TransactionRepository;
-import Funding.Startreum.domain.transaction.service.TransactionService;
-import Funding.Startreum.domain.users.User;
-import Funding.Startreum.domain.users.UserRepository;
-import Funding.Startreum.domain.virtualaccount.dto.VirtualAccountDtos;
-import Funding.Startreum.domain.virtualaccount.dto.request.AccountPaymentRequest;
-import Funding.Startreum.domain.virtualaccount.dto.request.AccountRequest;
-import Funding.Startreum.domain.virtualaccount.dto.response.AccountPaymentResponse;
-import Funding.Startreum.domain.virtualaccount.dto.response.AccountRefundResponse;
-import Funding.Startreum.domain.virtualaccount.dto.response.AccountResponse;
-import Funding.Startreum.domain.virtualaccount.entity.VirtualAccount;
-import Funding.Startreum.domain.virtualaccount.exception.AccountNotFoundException;
-import Funding.Startreum.domain.virtualaccount.exception.NotEnoughBalanceException;
-import Funding.Startreum.domain.transaction.transaction.TransactionNotFoundException;
-import Funding.Startreum.domain.virtualaccount.repository.VirtualAccountRepository;
+import funding.startreum.domain.funding.entity.Funding;
+import funding.startreum.domain.funding.service.FundingService;
+import funding.startreum.domain.project.entity.Project;
+import funding.startreum.domain.project.repository.ProjectRepository;
+import funding.startreum.domain.project.service.ProjectService;
+import funding.startreum.domain.transaction.entity.Transaction;
+import funding.startreum.domain.transaction.repository.TransactionRepository;
+import funding.startreum.domain.transaction.service.TransactionService;
+import funding.startreum.domain.users.User;
+import funding.startreum.domain.users.UserRepository;
+import funding.startreum.domain.virtualaccount.dto.VirtualAccountDtos;
+import funding.startreum.domain.virtualaccount.dto.request.AccountPaymentRequest;
+import funding.startreum.domain.virtualaccount.dto.request.AccountRequest;
+import funding.startreum.domain.virtualaccount.dto.response.AccountPaymentResponse;
+import funding.startreum.domain.virtualaccount.dto.response.AccountRefundResponse;
+import funding.startreum.domain.virtualaccount.dto.response.AccountResponse;
+import funding.startreum.domain.virtualaccount.entity.VirtualAccount;
+import funding.startreum.domain.virtualaccount.exception.AccountNotFoundException;
+import funding.startreum.domain.virtualaccount.exception.NotEnoughBalanceException;
+import funding.startreum.domain.transaction.transaction.TransactionNotFoundException;
+import funding.startreum.domain.virtualaccount.repository.VirtualAccountRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,11 +29,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-import static Funding.Startreum.domain.transaction.entity.Transaction.TransactionType.REFUND;
-import static Funding.Startreum.domain.transaction.entity.Transaction.TransactionType.REMITTANCE;
-import static Funding.Startreum.domain.virtualaccount.dto.response.AccountPaymentResponse.mapToAccountPaymentResponse;
-import static Funding.Startreum.domain.virtualaccount.dto.response.AccountRefundResponse.mapToAccountRefundResponse;
-import static Funding.Startreum.domain.virtualaccount.dto.response.AccountResponse.mapToAccountResponse;
+import static funding.startreum.domain.transaction.entity.Transaction.TransactionType.REFUND;
+import static funding.startreum.domain.transaction.entity.Transaction.TransactionType.REMITTANCE;
+import static funding.startreum.domain.virtualaccount.dto.response.AccountPaymentResponse.mapToAccountPaymentResponse;
+import static funding.startreum.domain.virtualaccount.dto.response.AccountRefundResponse.mapToAccountRefundResponse;
+import static funding.startreum.domain.virtualaccount.dto.response.AccountResponse.mapToAccountResponse;
 
 // TODO 도메인 분리 작업 필요
 @Service

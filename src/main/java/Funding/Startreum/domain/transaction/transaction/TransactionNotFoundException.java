@@ -1,4 +1,4 @@
-package Funding.Startreum.domain.transaction.transaction;
+package funding.startreum.domain.transaction.transaction;
 
 public class TransactionNotFoundException extends RuntimeException {
 

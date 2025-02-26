@@ -1,6 +1,6 @@
-package Funding.Startreum.domain.transaction.repository;
+package funding.startreum.domain.transaction.repository;
 
-import Funding.Startreum.domain.transaction.entity.Transaction;
+import funding.startreum.domain.transaction.entity.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

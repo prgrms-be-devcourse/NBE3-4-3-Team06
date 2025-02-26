@@ -1,4 +1,4 @@
-package Funding.Startreum.domain.virtualaccount.exception;
+package funding.startreum.domain.virtualaccount.exception;
 
 public class AccountNotFoundException extends RuntimeException {
 

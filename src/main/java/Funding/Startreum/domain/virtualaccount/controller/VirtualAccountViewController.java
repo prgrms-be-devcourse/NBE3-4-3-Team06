@@ -1,6 +1,6 @@
-package Funding.Startreum.domain.virtualaccount.controller;
+package funding.startreum.domain.virtualaccount.controller;
 
-import Funding.Startreum.domain.virtualaccount.service.VirtualAccountService;
+import funding.startreum.domain.virtualaccount.service.VirtualAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

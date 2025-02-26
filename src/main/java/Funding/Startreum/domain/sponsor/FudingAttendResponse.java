@@ -1,4 +1,4 @@
-package Funding.Startreum.domain.sponsor;
+package funding.startreum.domain.sponsor;
 
 import java.time.LocalDateTime;
 

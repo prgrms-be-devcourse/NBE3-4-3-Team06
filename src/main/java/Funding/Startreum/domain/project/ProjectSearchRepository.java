@@ -1,7 +1,7 @@
-package Funding.Startreum.domain.project;
+package funding.startreum.domain.project;
 
 
-import Funding.Startreum.domain.project.entity.Project;
+import funding.startreum.domain.project.entity.Project;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,5 +1,6 @@
-package Funding.Startreum.domain.users;
+package funding.startreum.domain.users;
 
+import funding.startreum.domain.users.MyFundingRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

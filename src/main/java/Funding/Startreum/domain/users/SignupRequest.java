@@ -1,5 +1,6 @@
-package Funding.Startreum.domain.users;
+package funding.startreum.domain.users;
 
+import funding.startreum.domain.users.User;
 import jakarta.validation.constraints.*;
 
 

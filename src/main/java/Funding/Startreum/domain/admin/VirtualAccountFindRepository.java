@@ -1,6 +1,6 @@
-package Funding.Startreum.domain.admin;
+package funding.startreum.domain.admin;
 
-import Funding.Startreum.domain.virtualaccount.entity.VirtualAccount;
+import funding.startreum.domain.virtualaccount.entity.VirtualAccount;
 import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 

@@ -1,4 +1,4 @@
-package Funding.Startreum.domain.inquiry;
+package funding.startreum.domain.inquiry;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

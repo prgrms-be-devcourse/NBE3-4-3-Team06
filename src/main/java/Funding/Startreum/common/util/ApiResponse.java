@@ -1,4 +1,4 @@
-package Funding.Startreum.common.util;
+package funding.startreum.common.util;
 
 public record ApiResponse<T>(
         String status,      // 응답 상태 ("success", "error")

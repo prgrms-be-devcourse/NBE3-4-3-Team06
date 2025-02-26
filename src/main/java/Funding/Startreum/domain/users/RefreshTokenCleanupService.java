@@ -1,5 +1,6 @@
-package Funding.Startreum.domain.users;
+package funding.startreum.domain.users;
 
+import funding.startreum.domain.users.RefreshTokenRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 

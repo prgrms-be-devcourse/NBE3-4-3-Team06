@@ -1,7 +1,7 @@
-package Funding.Startreum.domain.virtualaccount.dto.response;
+package funding.startreum.domain.virtualaccount.dto.response;
 
-import Funding.Startreum.domain.transaction.entity.Transaction;
-import Funding.Startreum.domain.virtualaccount.entity.VirtualAccount;
+import funding.startreum.domain.transaction.entity.Transaction;
+import funding.startreum.domain.virtualaccount.entity.VirtualAccount;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

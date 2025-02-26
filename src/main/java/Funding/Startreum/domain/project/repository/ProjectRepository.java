@@ -1,6 +1,6 @@
-package Funding.Startreum.domain.project.repository;
+package funding.startreum.domain.project.repository;
 
-import Funding.Startreum.domain.project.entity.Project;
+import funding.startreum.domain.project.entity.Project;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,4 +1,4 @@
-package Funding.Startreum.common.util;
+package funding.startreum.common.util;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

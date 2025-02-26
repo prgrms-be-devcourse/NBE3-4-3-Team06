@@ -1,13 +1,13 @@
-package Funding.Startreum.domain.comment.service;
+package funding.startreum.domain.comment.service;
 
-import Funding.Startreum.domain.comment.dto.request.CommentRequest;
-import Funding.Startreum.domain.comment.dto.response.CommentResponse;
-import Funding.Startreum.domain.comment.entity.Comment;
-import Funding.Startreum.domain.comment.repository.CommentRepository;
-import Funding.Startreum.domain.project.entity.Project;
-import Funding.Startreum.domain.project.service.ProjectService;
-import Funding.Startreum.domain.users.User;
-import Funding.Startreum.domain.users.UserRepository;
+import funding.startreum.domain.comment.dto.request.CommentRequest;
+import funding.startreum.domain.comment.dto.response.CommentResponse;
+import funding.startreum.domain.comment.entity.Comment;
+import funding.startreum.domain.comment.repository.CommentRepository;
+import funding.startreum.domain.project.entity.Project;
+import funding.startreum.domain.project.service.ProjectService;
+import funding.startreum.domain.users.User;
+import funding.startreum.domain.users.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static Funding.Startreum.domain.comment.dto.response.CommentResponse.toResponse;
+import static funding.startreum.domain.comment.dto.response.CommentResponse.toResponse;
 
 @Service
 @RequiredArgsConstructor

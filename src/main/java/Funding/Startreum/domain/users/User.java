@@ -1,11 +1,13 @@
-package Funding.Startreum.domain.users;
+package funding.startreum.domain.users;
 
-import Funding.Startreum.domain.admin.Admin;
-import Funding.Startreum.domain.comment.entity.Comment;
-import Funding.Startreum.domain.inquiry.Inquiry;
-import Funding.Startreum.domain.project.entity.Project;
-import Funding.Startreum.domain.funding.entity.Funding;
-import Funding.Startreum.domain.virtualaccount.entity.VirtualAccount;
+import funding.startreum.domain.admin.Admin;
+import funding.startreum.domain.comment.entity.Comment;
+import funding.startreum.domain.inquiry.Inquiry;
+
+import funding.startreum.domain.funding.entity.Funding;
+
+import funding.startreum.domain.project.entity.Project;
+import funding.startreum.domain.virtualaccount.entity.VirtualAccount;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,7 +1,7 @@
-package Funding.Startreum.domain.inquiry;
+package funding.startreum.domain.inquiry;
 
-import Funding.Startreum.domain.users.User;
-import Funding.Startreum.domain.users.UserRepository;
+import funding.startreum.domain.users.User;
+import funding.startreum.domain.users.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

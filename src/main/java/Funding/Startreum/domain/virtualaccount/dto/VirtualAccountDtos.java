@@ -1,6 +1,6 @@
-package Funding.Startreum.domain.virtualaccount.dto;
+package funding.startreum.domain.virtualaccount.dto;
 
-import Funding.Startreum.domain.virtualaccount.entity.VirtualAccount;
+import funding.startreum.domain.virtualaccount.entity.VirtualAccount;
 import lombok.*;
 
 import java.math.BigDecimal;

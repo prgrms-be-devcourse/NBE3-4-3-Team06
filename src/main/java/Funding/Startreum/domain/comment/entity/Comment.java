@@ -1,7 +1,8 @@
-package Funding.Startreum.domain.comment.entity;
+package funding.startreum.domain.comment.entity;
 
-import Funding.Startreum.domain.project.entity.Project;
-import Funding.Startreum.domain.users.User;
+
+import funding.startreum.domain.project.entity.Project;
+import funding.startreum.domain.users.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

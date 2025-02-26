@@ -1,6 +1,6 @@
-package Funding.Startreum.domain.admin;
+package funding.startreum.domain.admin;
 
-import Funding.Startreum.domain.project.entity.Project;
+import funding.startreum.domain.project.entity.Project;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,10 +13,10 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/admin/projects")
 public class AdminProjectApiController {
 
-    private final ProjectAdminRepository projectAdminRepository;
-    private final ProjectAdminService projectAdminService;
+    private final funding.startreum.domain.admin.ProjectAdminRepository projectAdminRepository;
+    private final funding.startreum.domain.admin.ProjectAdminService projectAdminService;
 
-    public AdminProjectApiController(ProjectAdminRepository projectAdminRepository, ProjectAdminService projectAdminService) {
+    public AdminProjectApiController(funding.startreum.domain.admin.ProjectAdminRepository projectAdminRepository, funding.startreum.domain.admin.ProjectAdminService projectAdminService) {
         this.projectAdminRepository = projectAdminRepository;
         this.projectAdminService = projectAdminService;
     }
@@ -26,7 +26,7 @@ public class AdminProjectApiController {
      * 🔹 프로젝트 목록 조회 (is_approved 상태 필터링 가능)
      */
     @GetMapping
-    public ResponseEntity<List<ProjectAdminSearchDto>> getProjectsByApprovalStatus(
+    public ResponseEntity<List<funding.startreum.domain.admin.ProjectAdminSearchDto>> getProjectsByApprovalStatus(
             @RequestParam(required = false) String status,
             Authentication authentication
     ) {
@@ -52,8 +52,8 @@ public class AdminProjectApiController {
         }
 
         // ✅ 관리자용 DTO로 변환하여 반환
-        List<ProjectAdminSearchDto> projectDtos = projects.stream()
-                .map(ProjectAdminSearchDto::from)
+        List<funding.startreum.domain.admin.ProjectAdminSearchDto> projectDtos = projects.stream()
+                .map(funding.startreum.domain.admin.ProjectAdminSearchDto::from)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(projectDtos);
@@ -65,7 +65,7 @@ public class AdminProjectApiController {
     @PatchMapping("/{projectId}/update")
     public ResponseEntity<String> updateProjectStatus(
             @PathVariable Integer projectId,
-            @RequestBody ProjectAdminUpdateDto updateDto,
+            @RequestBody funding.startreum.domain.admin.ProjectAdminUpdateDto updateDto,
             Authentication authentication
     ) {
         if (authentication == null || authentication.getAuthorities().stream()

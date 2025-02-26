@@ -1,7 +1,7 @@
-package Funding.Startreum.domain.project.dto;
+package funding.startreum.domain.project.dto;
 
 
-import Funding.Startreum.domain.project.entity.Project;
+import funding.startreum.domain.project.entity.Project;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

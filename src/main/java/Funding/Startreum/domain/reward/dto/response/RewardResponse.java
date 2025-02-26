@@ -1,6 +1,6 @@
-package Funding.Startreum.domain.reward.dto.response;
+package funding.startreum.domain.reward.dto.response;
 
-import Funding.Startreum.domain.reward.entity.Reward;
+import funding.startreum.domain.reward.entity.Reward;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

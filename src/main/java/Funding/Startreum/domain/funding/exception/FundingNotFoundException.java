@@ -1,4 +1,4 @@
-package Funding.Startreum.domain.funding.exception;
+package funding.startreum.domain.funding.exception;
 
 public class FundingNotFoundException extends RuntimeException {
 

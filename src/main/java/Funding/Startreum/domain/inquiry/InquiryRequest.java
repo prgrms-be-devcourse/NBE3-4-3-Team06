@@ -1,4 +1,4 @@
-package Funding.Startreum.domain.inquiry;
+package funding.startreum.domain.inquiry;
 
 public record InquiryRequest (
     String title,

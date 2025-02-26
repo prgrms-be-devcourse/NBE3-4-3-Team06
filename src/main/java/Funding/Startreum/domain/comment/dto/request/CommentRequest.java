@@ -1,4 +1,4 @@
-package Funding.Startreum.domain.comment.dto.request;
+package funding.startreum.domain.comment.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

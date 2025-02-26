@@ -1,6 +1,6 @@
-package Funding.Startreum.domain.admin;
+package funding.startreum.domain.admin;
 
-import Funding.Startreum.domain.project.entity.Project;
+import funding.startreum.domain.project.entity.Project;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

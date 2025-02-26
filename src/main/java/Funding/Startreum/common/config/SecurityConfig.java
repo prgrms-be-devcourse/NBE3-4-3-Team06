@@ -1,8 +1,9 @@
-package Funding.Startreum.common.config;
+package funding.startreum.common.config;
 
-import Funding.Startreum.common.util.JwtAuthenticationFilter;
-import Funding.Startreum.domain.users.CustomUserDetailsService;
-import Funding.Startreum.domain.users.UserRepository;
+import funding.startreum.common.util.JwtAuthenticationFilter;
+
+import funding.startreum.domain.users.CustomUserDetailsService;
+import funding.startreum.domain.users.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

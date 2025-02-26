@@ -1,4 +1,4 @@
-package Funding.Startreum.domain.users;
+package funding.startreum.domain.users;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -1,6 +1,6 @@
-package Funding.Startreum.domain.users;
+package funding.startreum.domain.users;
 
-import Funding.Startreum.common.util.JwtUtil;
+import funding.startreum.common.util.JwtUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,12 +1,12 @@
-package Funding.Startreum.domain.funding.service;
+package funding.startreum.domain.funding.service;
 
-import Funding.Startreum.domain.funding.entity.Funding;
-import Funding.Startreum.domain.funding.repository.FundingRepository;
-import Funding.Startreum.domain.project.entity.Project;
-import Funding.Startreum.domain.reward.repository.RewardRepository;
-import Funding.Startreum.domain.users.User;
-import Funding.Startreum.domain.users.UserService;
-import Funding.Startreum.domain.funding.exception.FundingNotFoundException;
+import funding.startreum.domain.funding.entity.Funding;
+import funding.startreum.domain.funding.repository.FundingRepository;
+import funding.startreum.domain.project.entity.Project;
+import funding.startreum.domain.reward.repository.RewardRepository;
+import funding.startreum.domain.users.User;
+import funding.startreum.domain.users.UserService;
+import funding.startreum.domain.funding.exception.FundingNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

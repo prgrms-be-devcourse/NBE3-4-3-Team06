@@ -1,11 +1,11 @@
-package Funding.Startreum.domain.reward.controller;
+package funding.startreum.domain.reward.controller;
 
-import Funding.Startreum.common.util.ApiResponse;
-import Funding.Startreum.domain.project.entity.Project;
-import Funding.Startreum.domain.reward.dto.request.RewardRequest;
-import Funding.Startreum.domain.reward.dto.request.RewardUpdateRequest;
-import Funding.Startreum.domain.reward.dto.response.RewardResponse;
-import Funding.Startreum.domain.reward.service.RewardService;
+import funding.startreum.common.util.ApiResponse;
+import funding.startreum.domain.project.entity.Project;
+import funding.startreum.domain.reward.dto.request.RewardRequest;
+import funding.startreum.domain.reward.dto.request.RewardUpdateRequest;
+import funding.startreum.domain.reward.dto.response.RewardResponse;
+import funding.startreum.domain.reward.service.RewardService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

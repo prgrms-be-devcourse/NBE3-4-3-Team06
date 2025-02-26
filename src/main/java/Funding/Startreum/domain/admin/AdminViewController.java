@@ -1,4 +1,4 @@
-package Funding.Startreum.domain.admin;
+package funding.startreum.domain.admin;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,9 +1,9 @@
-package Funding.Startreum.domain.admin;
+package funding.startreum.domain.admin;
 
 
-import Funding.Startreum.domain.project.entity.Project.ApprovalStatus;
+import funding.startreum.domain.project.entity.Project.ApprovalStatus;
 
-import Funding.Startreum.domain.project.entity.Project;
+import funding.startreum.domain.project.entity.Project;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

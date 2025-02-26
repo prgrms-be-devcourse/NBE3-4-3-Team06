@@ -1,7 +1,7 @@
-package Funding.Startreum.domain.comment.exception;
+package funding.startreum.domain.comment.exception;
 
-import Funding.Startreum.common.util.ApiResponse;
-import Funding.Startreum.domain.comment.controller.CommentRestController;
+import funding.startreum.common.util.ApiResponse;
+import funding.startreum.domain.comment.controller.CommentRestController;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

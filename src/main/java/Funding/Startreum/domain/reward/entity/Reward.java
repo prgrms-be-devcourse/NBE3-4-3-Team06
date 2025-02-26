@@ -1,6 +1,6 @@
-package Funding.Startreum.domain.reward.entity;
+package funding.startreum.domain.reward.entity;
 
-import Funding.Startreum.domain.project.entity.Project;
+import funding.startreum.domain.project.entity.Project;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

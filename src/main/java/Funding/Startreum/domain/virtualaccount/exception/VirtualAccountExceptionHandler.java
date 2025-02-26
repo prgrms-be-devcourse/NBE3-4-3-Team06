@@ -1,9 +1,9 @@
-package Funding.Startreum.domain.virtualaccount.exception;
+package funding.startreum.domain.virtualaccount.exception;
 
-import Funding.Startreum.common.util.ApiResponse;
-import Funding.Startreum.domain.funding.exception.FundingNotFoundException;
-import Funding.Startreum.domain.transaction.transaction.TransactionNotFoundException;
-import Funding.Startreum.domain.virtualaccount.controller.VirtualAccountController;
+import funding.startreum.common.util.ApiResponse;
+import funding.startreum.domain.funding.exception.FundingNotFoundException;
+import funding.startreum.domain.transaction.transaction.TransactionNotFoundException;
+import funding.startreum.domain.virtualaccount.controller.VirtualAccountController;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

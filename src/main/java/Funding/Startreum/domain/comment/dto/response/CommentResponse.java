@@ -1,6 +1,6 @@
-package Funding.Startreum.domain.comment.dto.response;
+package funding.startreum.domain.comment.dto.response;
 
-import Funding.Startreum.domain.comment.entity.Comment;
+import funding.startreum.domain.comment.entity.Comment;
 
 import java.time.LocalDateTime;
 

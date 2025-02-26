@@ -1,7 +1,7 @@
-package Funding.Startreum.domain.project;
+package funding.startreum.domain.project;
 
-import Funding.Startreum.domain.project.entity.Project;
-import Funding.Startreum.domain.project.repository.ProjectRepository;
+import funding.startreum.domain.project.entity.Project;
+import funding.startreum.domain.project.repository.ProjectRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

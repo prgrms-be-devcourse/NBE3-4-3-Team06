@@ -1,4 +1,4 @@
-package Funding.Startreum.domain.users;
+package funding.startreum.domain.users;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.core.userdetails.User;
@@ -11,9 +11,9 @@ import org.springframework.stereotype.Service;
 @Primary
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    private final funding.startreum.domain.users.UserRepository userRepository;
 
-    public CustomUserDetailsService(UserRepository userRepository) {
+    public CustomUserDetailsService(funding.startreum.domain.users.UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

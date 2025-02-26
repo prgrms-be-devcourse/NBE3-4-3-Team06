@@ -1,4 +1,4 @@
-package Funding.Startreum.domain.admin;
+package funding.startreum.domain.admin;
 
 
 // 환불 요청을 위한 DTO

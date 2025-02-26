@@ -1,11 +1,12 @@
 package Funding.Startreum.domain.funding.controller.InquiryCreateTest;
 
-import Funding.Startreum.common.util.JwtUtil;
 
-import Funding.Startreum.domain.inquiry.Inquiry;
-import Funding.Startreum.domain.inquiry.InquiryRequest;
-import Funding.Startreum.domain.inquiry.InquiryResponse;
-import Funding.Startreum.domain.inquiry.InquiryService;
+
+import funding.startreum.common.util.JwtUtil;
+import funding.startreum.domain.inquiry.Inquiry;
+import funding.startreum.domain.inquiry.InquiryRequest;
+import funding.startreum.domain.inquiry.InquiryResponse;
+import funding.startreum.domain.inquiry.InquiryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

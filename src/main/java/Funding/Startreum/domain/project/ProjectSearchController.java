@@ -1,4 +1,4 @@
-package Funding.Startreum.domain.project;
+package funding.startreum.domain.project;
 
 import org.springframework.web.bind.annotation.*;
 

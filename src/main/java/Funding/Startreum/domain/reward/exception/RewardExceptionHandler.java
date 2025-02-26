@@ -1,7 +1,7 @@
-package Funding.Startreum.domain.reward.exception;
+package funding.startreum.domain.reward.exception;
 
-import Funding.Startreum.common.util.ApiResponse;
-import Funding.Startreum.domain.reward.controller.RewardRestController;
+import funding.startreum.common.util.ApiResponse;
+import funding.startreum.domain.reward.controller.RewardRestController;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

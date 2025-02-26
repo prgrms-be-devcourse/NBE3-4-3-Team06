@@ -1,4 +1,4 @@
-package Funding.Startreum.domain.users;
+package funding.startreum.domain.users;
 
 import jakarta.persistence.*;
 import lombok.Getter;

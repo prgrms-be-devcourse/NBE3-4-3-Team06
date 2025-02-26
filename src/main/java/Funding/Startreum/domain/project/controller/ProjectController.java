@@ -1,13 +1,13 @@
-package Funding.Startreum.domain.project.controller;
+package funding.startreum.domain.project.controller;
 
-import Funding.Startreum.common.util.JwtUtil;
-import Funding.Startreum.domain.project.dto.ProjectCreateRequestDto;
-import Funding.Startreum.domain.project.dto.ProjectCreateResponseDto;
+import funding.startreum.common.util.JwtUtil;
+import funding.startreum.domain.project.dto.ProjectCreateRequestDto;
+import funding.startreum.domain.project.dto.ProjectCreateResponseDto;
 
-import Funding.Startreum.domain.project.dto.ProjectUpdateRequestDto;
-import Funding.Startreum.domain.project.dto.ProjectUpdateResponseDto;
-import Funding.Startreum.domain.project.dto.ProjectApprovalResponseDto;
-import Funding.Startreum.domain.project.service.ProjectService;
+import funding.startreum.domain.project.dto.ProjectUpdateRequestDto;
+import funding.startreum.domain.project.dto.ProjectUpdateResponseDto;
+import funding.startreum.domain.project.dto.ProjectApprovalResponseDto;
+import funding.startreum.domain.project.service.ProjectService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

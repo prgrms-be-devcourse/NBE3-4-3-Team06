@@ -1,6 +1,6 @@
-package Funding.Startreum.domain.inquiry;
+package funding.startreum.domain.inquiry;
 
-import Funding.Startreum.common.util.JwtUtil;
+import funding.startreum.common.util.JwtUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

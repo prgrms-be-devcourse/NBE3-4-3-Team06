@@ -1,6 +1,8 @@
-package Funding.Startreum.domain.users;
+package funding.startreum.domain.users;
 
-import Funding.Startreum.common.util.JwtUtil;
+import funding.startreum.common.util.JwtUtil;
+import funding.startreum.domain.users.UserResponse;
+import funding.startreum.domain.users.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;

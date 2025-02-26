@@ -1,4 +1,4 @@
-package Funding.Startreum.domain.virtualaccount.dto.request;
+package funding.startreum.domain.virtualaccount.dto.request;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

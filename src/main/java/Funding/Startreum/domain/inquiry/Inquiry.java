@@ -1,6 +1,6 @@
-package Funding.Startreum.domain.inquiry;
+package funding.startreum.domain.inquiry;
 
-import Funding.Startreum.domain.users.User;
+import funding.startreum.domain.users.User;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,14 +9,18 @@ import lombok.ToString;
 
 import java.time.LocalDateTime;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+
 @Getter
 @Setter
 @ToString
 @Entity
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "inquiries")
 public class Inquiry {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer inquiryId; // 문의 고유 ID

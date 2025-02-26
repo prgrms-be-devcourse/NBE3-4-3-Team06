@@ -1,4 +1,4 @@
-package Funding.Startreum.common.util;
+package funding.startreum.common.util;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
