@@ -1,8 +1,6 @@
 package funding.startreum.domain.users;
 
 import funding.startreum.common.util.JwtUtil;
-import funding.startreum.domain.users.UserResponse;
-import funding.startreum.domain.users.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -99,15 +97,15 @@ public class UserController {
             UserResponse user = userService.authenticateUser(loginRequest.name(), loginRequest.password());
 
             // ✅ 기존 Refresh Token 삭제 후 새로 저장
-            refreshTokenRepository.deleteByUsername(user.name());
+            refreshTokenRepository.deleteByUsername(user.name);
 
             // ✅ 새 Refresh Token 생성
-            String accessToken = jwtUtil.generateAccessToken(user.name(), user.email(), user.role().name());
-            String refreshToken = jwtUtil.generateRefreshToken(user.name());
+            String accessToken = jwtUtil.generateAccessToken(user.name, user.email, user.role.name());
+            String refreshToken = jwtUtil.generateRefreshToken(user.name);
 
             RefreshToken refreshTokenEntity = new RefreshToken();
             refreshTokenEntity.setToken(refreshToken);
-            refreshTokenEntity.setUsername(user.name());
+            refreshTokenEntity.setUsername(user.name);
             refreshTokenEntity.setExpiryDate(new Date(System.currentTimeMillis() + jwtUtil.getRefreshTokenExpiration())); // 7일 후 만료
 
             refreshTokenRepository.save(refreshTokenEntity);
@@ -116,8 +114,8 @@ public class UserController {
             Map<String, Object> response = new HashMap<>();
             response.put("accessToken", accessToken);
             response.put("refreshToken", refreshToken);
-            response.put("userName", user.name());
-            response.put("role", user.role().name());
+            response.put("userName", user.name);
+            response.put("role", user.role.name());
             response.put("refreshTokenExpiry", refreshTokenEntity.getExpiryDate().getTime());
 
             //System.out.println("발급된 액세스 토큰: " + accessToken);

@@ -39,14 +39,14 @@ public class UserService {
         validateSignupRequest(signupRequest);
 
         // 비밀번호 암호화
-        String encryptedPassword = passwordEncoder.encode(signupRequest.password());
+        String encryptedPassword = passwordEncoder.encode(signupRequest.password);
 
         // 사용자 엔티티 생성
         User user = new User();
-        user.setName(signupRequest.name());
-        user.setEmail(signupRequest.email());
+        user.setName(signupRequest.name);
+        user.setEmail(signupRequest.email);
         user.setPassword(encryptedPassword);
-        user.setRole(signupRequest.role());
+        user.setRole(signupRequest.role);
         user.setCreatedAt(LocalDateTime.now());
         user.setUpdatedAt(LocalDateTime.now());
 
@@ -57,17 +57,17 @@ public class UserService {
     //  입력 값 검증
     private void validateSignupRequest(SignupRequest signupRequest) {
         // 이메일 중복 확인
-        if (isEmailDuplicate(signupRequest.email())) {
+        if (isEmailDuplicate(signupRequest.email)) {
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
 
         // 이름(ID) 중복 확인
-        if (isNameDuplicate(signupRequest.name())) {
+        if (isNameDuplicate(signupRequest.name)) {
             throw new IllegalArgumentException("이미 사용 중인 이름(ID)입니다.");
         }
 
         // 역할 검증
-        if (!allowedRoles.contains(signupRequest.role())) {
+        if (!allowedRoles.contains(signupRequest.role)) {
             throw new IllegalArgumentException("허용되지 않은 역할(Role)입니다.");
         }
     }

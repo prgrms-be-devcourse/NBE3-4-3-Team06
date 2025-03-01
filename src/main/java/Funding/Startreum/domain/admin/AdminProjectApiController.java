@@ -62,7 +62,7 @@ public class AdminProjectApiController {
     /**
      * 🔹 프로젝트 승인 및 진행 상태 변경 API
      */
-    @PatchMapping("/{projectId}/update")
+  /*  @PatchMapping("/{projectId}/update")
     public ResponseEntity<String> updateProjectStatus(
             @PathVariable Integer projectId,
             @RequestBody funding.startreum.domain.admin.ProjectAdminUpdateDto updateDto,
@@ -78,5 +78,5 @@ public class AdminProjectApiController {
         projectAdminService.updateProject(projectId, updateDto);
 
         return ResponseEntity.ok("✅ 프로젝트 상태가 변경되었습니다.");
-    }
+    }*/
 }
