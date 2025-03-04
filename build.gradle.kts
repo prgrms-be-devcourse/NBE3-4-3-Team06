@@ -2,6 +2,9 @@ plugins {
 	kotlin("jvm") version "1.9.22"
 	id("org.springframework.boot") version "3.4.2"
 	id("io.spring.dependency-management") version "1.1.7"
+
+	// 🔥 `kotlin-jpa` 대신 `kotlin-allopen` 사용
+	id("org.jetbrains.kotlin.plugin.allopen") version "1.9.22"
 }
 
 group = "funding"
@@ -25,34 +28,33 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
-	// Lombok 추가
-	compileOnly("org.projectlombok:lombok")
-	annotationProcessor("org.projectlombok:lombok")
-
-	// Kotlin 관련 라이브러리 추가
+	// Kotlin 관련 라이브러리
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 
-	// Security & DB 관련
-	implementation("org.springframework.boot:spring-boot-starter-security")
+	// JPA 관련
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("mysql:mysql-connector-java:8.0.33")
 
-	// JSON 관련 라이브러리
+	// Lombok
+	compileOnly("org.projectlombok:lombok")
+	annotationProcessor("org.projectlombok:lombok")
+
+	// Security
+	implementation("org.springframework.boot:spring-boot-starter-security")
+
+	// JSON 관련
 	implementation("org.json:json:20240303")
 	implementation("jakarta.servlet:jakarta.servlet-api:6.0.0")
 
 	// JSON Web Token (JJWT)
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
-	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5") // Jackson JSON 직렬화 지원
+	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
 
-	// 테스트 관련 라이브러리
-	testImplementation("org.springframework.boot:spring-boot-starter-test") // ✅ 최신 버전 사용
-	testImplementation("org.mockito:mockito-core:5.14.2") // ✅ 최신 Mockito
+	// 테스트 관련
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.mockito:mockito-core:5.14.2")
 	testImplementation("org.springframework.security:spring-security-test")
 }
 
