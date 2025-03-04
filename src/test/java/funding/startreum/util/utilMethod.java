@@ -1,18 +1,17 @@
 package funding.startreum.util;
 
-import funding.startreum.common.util.JwtUtil;
 import funding.startreum.domain.project.entity.Project;
 import funding.startreum.domain.project.repository.ProjectRepository;
-import funding.startreum.domain.users.CustomUserDetailsService;
-import funding.startreum.domain.users.UserService;
+import funding.startreum.domain.users.service.CustomUserDetailsService;
+import funding.startreum.domain.users.service.UserService;
 import funding.startreum.domain.virtualaccount.entity.VirtualAccount;
 import funding.startreum.domain.virtualaccount.repository.VirtualAccountRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import static org.mockito.BDDMockito.given;
-
 import java.math.BigDecimal;
 import java.util.Optional;
+
+import static org.mockito.BDDMockito.given;
 
 public class utilMethod {
 
@@ -24,7 +23,7 @@ public class utilMethod {
      * @param accountOwner 계좌 소유자
      */
     public static void createVirtualAccount(VirtualAccountRepository repository, int accountId, String accountOwner) {
-        funding.startreum.domain.users.User user = new funding.startreum.domain.users.User();
+        funding.startreum.domain.users.entity.User user = new funding.startreum.domain.users.entity.User();
         user.setName(accountOwner);
 
         VirtualAccount account = new VirtualAccount();
@@ -43,7 +42,7 @@ public class utilMethod {
      * @param projectOwner  프로젝트 소유자
      */
     public static void createVirtualProject(ProjectRepository repository, int projectId, String projectOwner) {
-        funding.startreum.domain.users.User user = new funding.startreum.domain.users.User();
+        funding.startreum.domain.users.entity.User user = new funding.startreum.domain.users.entity.User();
         user.setName(projectOwner);
 
         Project project = new Project();
@@ -60,8 +59,8 @@ public class utilMethod {
      * @param username    사용자 이름
      * @param role        사용자 역할 (예: ADMIN, SPONSOR 등)
      */
-    public static void setVirtualUser(UserService userService, int userId, String username, funding.startreum.domain.users.User.Role role) {
-        funding.startreum.domain.users.User user = new funding.startreum.domain.users.User();
+    public static void setVirtualUser(UserService userService, int userId, String username, funding.startreum.domain.users.entity.User.Role role) {
+        funding.startreum.domain.users.entity.User user = new funding.startreum.domain.users.entity.User();
         user.setUserId(userId);
         user.setName(username);
         user.setRole(role);

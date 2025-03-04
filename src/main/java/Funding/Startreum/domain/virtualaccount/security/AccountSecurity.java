@@ -1,6 +1,6 @@
 package funding.startreum.domain.virtualaccount.security;
 
-import funding.startreum.domain.users.UserService;
+import funding.startreum.domain.users.service.UserService;
 import funding.startreum.domain.virtualaccount.entity.VirtualAccount;
 import funding.startreum.domain.virtualaccount.exception.AccountNotFoundException;
 import funding.startreum.domain.virtualaccount.repository.VirtualAccountRepository;
@@ -34,7 +34,7 @@ public class AccountSecurity {
         VirtualAccount account = repository.findById(accountId)
                 .orElseThrow(() -> new AccountNotFoundException(accountId));
 
-        // 계좌에 저장된 User 엔티티에서 userId 추출
+        // 계좌에 저장된 funding.startreum.domain.users.entity.User 엔티티에서 userId 추출
         Integer accountUserId = userService.getUserByName(account.getUser().getName()).getUserId();
         Integer loginUserId = userService.getUserByName(userDetails.getUsername()).getUserId();
 

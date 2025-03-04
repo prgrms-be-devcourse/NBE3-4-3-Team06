@@ -3,7 +3,7 @@ package funding.startreum.domain.transaction.service;
 import funding.startreum.domain.funding.entity.Funding;
 import funding.startreum.domain.transaction.entity.Transaction;
 import funding.startreum.domain.transaction.repository.TransactionRepository;
-import funding.startreum.domain.users.UserRepository;
+import funding.startreum.domain.users.repository.UserRepository;
 import funding.startreum.domain.virtualaccount.entity.VirtualAccount;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -11,7 +11,7 @@ import funding.startreum.domain.transaction.entity.Transaction;
 import funding.startreum.domain.transaction.repository.TransactionRepository;
 import funding.startreum.domain.transaction.service.TransactionService;
 import funding.startreum.domain.users.User;
-import funding.startreum.domain.users.UserRepository;
+import funding.startreum.domain.users.repository.UserRepository;
 import funding.startreum.domain.users.UserService;
 import funding.startreum.domain.virtualaccount.dto.VirtualAccountDtos;
 import funding.startreum.domain.virtualaccount.dto.request.AccountPaymentRequest;

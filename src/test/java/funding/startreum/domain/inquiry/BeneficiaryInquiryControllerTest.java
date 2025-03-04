@@ -2,7 +2,7 @@ package funding.startreum.domain.inquiry;
 
 import funding.startreum.common.util.JwtUtil;
 import funding.startreum.domain.users.User;
-import funding.startreum.domain.users.UserRepository;
+import funding.startreum.domain.users.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

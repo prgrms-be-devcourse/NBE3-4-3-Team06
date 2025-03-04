@@ -1,7 +1,9 @@
 package funding.startreum.domain.users;
 
 import funding.startreum.common.util.JwtUtil;
-import funding.startreum.domain.users.*;
+import funding.startreum.domain.users.controller.UserController;
+import funding.startreum.domain.users.dto.UserResponse;
+import funding.startreum.domain.users.repository.RefreshTokenRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

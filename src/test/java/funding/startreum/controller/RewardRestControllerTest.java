@@ -76,7 +76,7 @@ class RewardRestControllerTest {
     }
 
     private void createVirtualProject(int projectId, String projectOwner) {
-        funding.startreum.domain.users.User user = new funding.startreum.domain.users.User();
+        funding.startreum.domain.users.funding.startreum.domain.users.entity.User user = new funding.startreum.domain.users.funding.startreum.domain.users.entity.User();
         user.setName(projectOwner);
         Project project = new Project();
         project.setCreator(user);

@@ -6,8 +6,7 @@ import funding.startreum.domain.project.entity.Project;
 import funding.startreum.domain.project.repository.ProjectRepository;
 import funding.startreum.domain.project.service.ProjectService;
 import funding.startreum.domain.users.User;
-import funding.startreum.domain.users.UserRepository;  // UserRepository import 추가
-import funding.startreum.domain.users.UserRepository;
+import funding.startreum.domain.users.repository.UserRepository;  // UserRepository import 추가
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

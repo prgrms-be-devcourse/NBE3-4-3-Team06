@@ -2,8 +2,8 @@ package funding.startreum.domain.virtualaccount.controller;
 
 import funding.startreum.common.util.JwtUtil;
 import funding.startreum.domain.project.repository.ProjectRepository;
-import funding.startreum.domain.users.CustomUserDetailsService;
-import funding.startreum.domain.users.UserService;
+import funding.startreum.domain.users.service.CustomUserDetailsService;
+import funding.startreum.domain.users.service.UserService;
 import funding.startreum.domain.virtualaccount.dto.request.AccountPaymentRequest;
 import funding.startreum.domain.virtualaccount.dto.request.AccountRequest;
 import funding.startreum.domain.virtualaccount.dto.response.AccountPaymentResponse;
@@ -102,9 +102,9 @@ class VirtualAccountControllerTest {
         createVirtualDetails(userDetailsService, OTHER, "SPONSOR");
 
         // 가상 사용자 정보 설정
-        setVirtualUser(userService, 1, ADMIN, funding.startreum.domain.users.User.Role.ADMIN);
-        setVirtualUser(userService, 2, OWNER, funding.startreum.domain.users.User.Role.SPONSOR);
-        setVirtualUser(userService, 3, OTHER, funding.startreum.domain.users.User.Role.SPONSOR);
+        setVirtualUser(userService, 1, ADMIN, funding.startreum.domain.users.entity.User.Role.ADMIN);
+        setVirtualUser(userService, 2, OWNER, funding.startreum.domain.users.entity.User.Role.SPONSOR);
+        setVirtualUser(userService, 3, OTHER, funding.startreum.domain.users.entity.User.Role.SPONSOR);
 
         // JWT 토큰 생성
         adminToken = createUserToken(jwtUtil, ADMIN, "admin@test.com", "ADMIN");

@@ -2,8 +2,8 @@ package funding.startreum.common.config;
 
 import funding.startreum.common.util.JwtAuthenticationFilter;
 
-import funding.startreum.domain.users.CustomUserDetailsService;
-import funding.startreum.domain.users.UserRepository;
+import funding.startreum.domain.users.service.CustomUserDetailsService;
+import funding.startreum.domain.users.repository.UserRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,7 +26,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import java.util.List;
 
 @Configuration
-@EnableMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true, proxyTargetClass = false)  // ✅ JDK 동적 프록시 사용
 public class SecurityConfig {
 
     // ✅ 비밀번호 암호화 설정

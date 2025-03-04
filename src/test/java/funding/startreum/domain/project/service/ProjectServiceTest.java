@@ -4,7 +4,7 @@ import funding.startreum.domain.project.dto.*;
 import funding.startreum.domain.project.entity.Project;
 import funding.startreum.domain.project.repository.ProjectRepository;
 import funding.startreum.domain.users.User;
-import funding.startreum.domain.users.UserRepository;
+import funding.startreum.domain.users.repository.UserRepository;
 import funding.startreum.common.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -139,6 +138,6 @@ class ProjectServiceTest {
         ProjectApprovalResponseDto response = projectService.requestApprove(projectId, JWT_TOKEN);
 
         assertNotNull(response);
-        assertEquals("AWAITING_APPROVAL", response.status());
+        assertEquals("AWAITING_APPROVAL", response.status);
     }
 }
