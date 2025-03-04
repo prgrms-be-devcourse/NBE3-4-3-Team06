@@ -42,16 +42,16 @@ public class ProjectController {
 //
 //    }
 
-    @PutMapping("/modify/{projectId}")
-    @PreAuthorize("hasRole('BENEFICIARY')") //수혜자만 수정 가능
-    public ResponseEntity<?> modifyProject(@PathVariable Integer projectId, @RequestHeader("Authorization") String token, @RequestBody @Valid ProjectUpdateRequestDto projectUpdateRequestDto) {
-        ProjectUpdateResponseDto updatedProject = projectService.modifyProject(projectId, projectUpdateRequestDto, token);
-        return ResponseEntity.ok(Map.of(
-                "statusCode", 200,
-                "message", "프로젝트 수정에 성공하였습니다.",
-                "data", updatedProject
-        ));
-    }
+//    @PutMapping("/modify/{projectId}")
+//    @PreAuthorize("hasRole('BENEFICIARY')") //수혜자만 수정 가능
+//    public ResponseEntity<?> modifyProject(@PathVariable Integer projectId, @RequestHeader("Authorization") String token, @RequestBody @Valid ProjectUpdateRequestDto projectUpdateRequestDto) {
+//        ProjectUpdateResponseDto updatedProject = projectService.modifyProject(projectId, projectUpdateRequestDto, token);
+//        return ResponseEntity.ok(Map.of(
+//                "statusCode", 200,
+//                "message", "프로젝트 수정에 성공하였습니다.",
+//                "data", updatedProject
+//        ));
+//    }
 
     @DeleteMapping("/delete/{projectId}")
     public ResponseEntity<?> deleteProject(@PathVariable Integer projectId, @RequestHeader("Authorization") String token) {
