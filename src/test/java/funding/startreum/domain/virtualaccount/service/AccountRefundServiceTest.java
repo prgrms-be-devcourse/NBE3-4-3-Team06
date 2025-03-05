@@ -56,7 +56,7 @@ class AccountRefundServiceTest {
             when(transactionService.getTransaction(originalTransactionId)).thenReturn(oldTransaction);
 
             VirtualAccount payerAccount = createVirtualAccount(payerAccountId, BigDecimal.valueOf(100));
-            when(accountQueryService.getAccount(payerAccountId)).thenReturn(payerAccount);
+            when(accountQueryService.getAccountByAccountId(payerAccountId)).thenReturn(payerAccount);
 
             VirtualAccount projectAccount = spy(createVirtualAccount(2, BigDecimal.valueOf(200)));
             when(accountQueryService.getReceiverAccountByTransactionId(originalTransactionId)).thenReturn(projectAccount);

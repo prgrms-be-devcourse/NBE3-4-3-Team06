@@ -25,7 +25,7 @@ open class AccountChargeService(
      * @return AccountPaymentResponse
      */
     fun chargeByAccountId(accountId: Int, request: AccountRequest): AccountPaymentResponse {
-        val account = accountQueryService.getAccount(accountId)
+        val account = accountQueryService.getAccountByAccountId(accountId)
         return chargeAccount(account, request)
     }
 
@@ -37,7 +37,7 @@ open class AccountChargeService(
      * @return AccountPaymentResponse
      */
     fun chargeByUsername(username: String, request: AccountRequest): AccountPaymentResponse {
-        val account = accountQueryService.getAccount(username)
+        val account = accountQueryService.getAccountByUsername(username)
         return chargeAccount(account, request)
     }
 

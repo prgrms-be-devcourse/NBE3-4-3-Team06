@@ -31,7 +31,7 @@ open class AccountRefundService(
         val oldTransaction = transactionService.getTransaction(transactionId)
 
         // 2) 계좌 조회
-        val payerAccount = accountQueryService.getAccount(payerAccountId)
+        val payerAccount = accountQueryService.getAccountByAccountId(payerAccountId)
         val projectAccount = accountQueryService.getReceiverAccountByTransactionId(transactionId)
 
         // 3) 환불 처리: 프로젝트 계좌에서 환불 금액 출금하여 결제자 계좌에 입금

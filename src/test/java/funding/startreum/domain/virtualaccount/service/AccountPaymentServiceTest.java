@@ -92,7 +92,7 @@ class AccountPaymentServiceTest {
 
             // 결제자 계좌: 200원
             VirtualAccount payerAccount = createVirtualAccount(accountId, BigDecimal.valueOf(200));
-            when(accountQueryService.getAccount(accountId)).thenReturn(payerAccount);
+            when(accountQueryService.getAccountByAccountId(accountId)).thenReturn(payerAccount);
 
             // 수혜자 계좌: 100원
             VirtualAccount projectAccount = createVirtualAccount(2, BigDecimal.valueOf(100));
@@ -151,7 +151,7 @@ class AccountPaymentServiceTest {
 
             // 결제자 계좌: 300원
             VirtualAccount payerAccount = createVirtualAccount(3, BigDecimal.valueOf(300));
-            when(accountQueryService.getAccount(username)).thenReturn(payerAccount);
+            when(accountQueryService.getAccountByUsername(username)).thenReturn(payerAccount);
 
             // 프로젝트 수혜자 계좌: 50원
             VirtualAccount projectAccount = createVirtualAccount(4, BigDecimal.valueOf(50));

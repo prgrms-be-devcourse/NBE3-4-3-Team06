@@ -36,7 +36,7 @@ open class AccountPaymentService(
     ): AccountPaymentResponse {
         val project = projectService.getProject(request.projectId)
 
-        val payerAccount = accountQueryService.getAccount(accountId)
+        val payerAccount = accountQueryService.getAccountByAccountId(accountId)
         val projectAccount = accountQueryService.getAccountByProjectId(request.projectId)
 
         return processPayment(project, payerAccount, projectAccount, request, username)
@@ -56,7 +56,7 @@ open class AccountPaymentService(
     ): AccountPaymentResponse {
         val project = projectService.getProject(request.projectId)
 
-        val payerAccount = accountQueryService.getAccount(username)
+        val payerAccount = accountQueryService.getAccountByUsername(username)
         val projectAccount = accountQueryService.getAccountByProjectId(request.projectId)
 
         return processPayment(project, payerAccount, projectAccount, request, username)

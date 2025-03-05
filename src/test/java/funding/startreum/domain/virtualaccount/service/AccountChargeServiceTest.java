@@ -66,7 +66,7 @@ class AccountChargeServiceTest {
             AccountRequest request = new AccountRequest(chargeAmount);
 
             // accountId에 해당하는 가짜 계좌 반환
-            given(accountQueryService.getAccount(accountId)).willReturn(testAccount);
+            given(accountQueryService.getAccountByAccountId(accountId)).willReturn(testAccount);
 
             // transactionService.createTransaction(...) 호출 시 testTransaction 반환
             given(transactionService.createTransaction(isNull(), eq(testAccount), eq(testAccount),
@@ -103,7 +103,7 @@ class AccountChargeServiceTest {
             AccountRequest request = new AccountRequest(chargeAmount);
 
             // username에 해당하는 가짜 계좌 반환
-            given(accountQueryService.getAccount(username)).willReturn(testAccount);
+            given(accountQueryService.getAccountByUsername(username)).willReturn(testAccount);
 
             // transactionService.createTransaction(...) 호출 시 testTransaction 반환
             given(transactionService.createTransaction(isNull(), eq(testAccount), eq(testAccount),

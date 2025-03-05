@@ -222,7 +222,7 @@ class AccountQueryServiceTest {
             when(virtualAccountRepository.findById(accountId)).thenReturn(Optional.empty());
 
             // When & Then
-            assertThrows(AccountNotFoundException.class, () -> accountQueryService.getAccount(accountId));
+            assertThrows(AccountNotFoundException.class, () -> accountQueryService.getAccountByAccountId(accountId));
         }
 
         @Test
@@ -233,7 +233,7 @@ class AccountQueryServiceTest {
             when(virtualAccountRepository.findByUser_Name(username)).thenReturn(Optional.empty());
 
             // When & Then
-            assertThrows(AccountNotFoundException.class, () -> accountQueryService.getAccount(username));
+            assertThrows(AccountNotFoundException.class, () -> accountQueryService.getAccountByUsername(username));
         }
     }
 
