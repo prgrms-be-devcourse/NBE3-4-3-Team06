@@ -181,7 +181,7 @@ class AccountQueryServiceTest {
             AccountResponse response = accountQueryService.getAccountInfo(accountId);
 
             assertNotNull(response, "계좌 정보 응답은 null이 아니어야 합니다.");
-            assertEquals(accountId, response.accountId(), "응답 계좌 ID가 일치해야 합니다.");
+            assertEquals(accountId, response.getAccountId(), "응답 계좌 ID가 일치해야 합니다.");
         }
 
         @Test
@@ -199,7 +199,7 @@ class AccountQueryServiceTest {
             AccountResponse response = accountQueryService.getAccountInfo(username);
 
             assertNotNull(response, "계좌 정보 응답은 null이 아니어야 합니다.");
-            assertEquals(2, response.accountId(), "응답 계좌 ID가 일치해야 합니다.");
+            assertEquals(2, response.getAccountId(), "응답 계좌 ID가 일치해야 합니다.");
         }
     }
 

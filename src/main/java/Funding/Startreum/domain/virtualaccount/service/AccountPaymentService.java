@@ -40,10 +40,10 @@ public class AccountPaymentService {
             AccountPaymentRequest request,
             String username
     ) {
-        Project project = projectService.getProject(request.projectId());
+        Project project = projectService.getProject(request.getProjectId());
 
         VirtualAccount payerAccount = accountQueryService.getAccount(accountId);
-        VirtualAccount projectAccount = accountQueryService.getAccountByProjectId(request.projectId());
+        VirtualAccount projectAccount = accountQueryService.getAccountByProjectId(request.getProjectId());
 
         return processPayment(project, payerAccount, projectAccount, request, username);
     }
@@ -60,10 +60,10 @@ public class AccountPaymentService {
             AccountPaymentRequest request,
             String username
     ) {
-        Project project = projectService.getProject(request.projectId());
+        Project project = projectService.getProject(request.getProjectId());
 
         VirtualAccount payerAccount = accountQueryService.getAccount(username);
-        VirtualAccount projectAccount = accountQueryService.getAccountByProjectId(request.projectId());
+        VirtualAccount projectAccount = accountQueryService.getAccountByProjectId(request.getProjectId());
 
         return processPayment(project, payerAccount, projectAccount, request, username);
     }
@@ -86,7 +86,7 @@ public class AccountPaymentService {
             String username
     ) {
         BigDecimal payerBalanceBefore = from.getBalance();
-        BigDecimal paymentAmount = request.amount();
+        BigDecimal paymentAmount = request.getAmount();
 
         // 1) 결제 처리
         from.transferTo(paymentAmount, to);

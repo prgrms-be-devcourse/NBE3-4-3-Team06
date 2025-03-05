@@ -66,12 +66,12 @@ class AccountChargeServiceTest {
 
             // 충전 후 잔액은 초기 잔액 + 충전 금액이어야 함
             assertEquals(initialBalance.add(chargeAmount), account.getBalance());
-            assertEquals(transaction.getTransactionId(), response.transactionId());
-            assertEquals(accountId, response.accountId());
-            assertEquals(initialBalance, response.beforeMoney());
-            assertEquals(chargeAmount, response.chargeAmount());
-            assertEquals(account.getBalance(), response.afterMoney());
-            assertEquals(now, response.transactionDate());
+            assertEquals(transaction.getTransactionId(), response.getTransactionId());
+            assertEquals(accountId, response.getAccountId());
+            assertEquals(initialBalance, response.getBeforeMoney());
+            assertEquals(chargeAmount, response.getChargeAmount());
+            assertEquals(account.getBalance(), response.getAfterMoney());
+            assertEquals(now, response.getTransactionDate());
         }
     }
 
@@ -101,12 +101,12 @@ class AccountChargeServiceTest {
             AccountPaymentResponse response = accountChargeService.chargeByUsername(username, request);
 
             assertEquals(initialBalance.add(chargeAmount), account.getBalance());
-            assertEquals(transaction.getTransactionId(), response.transactionId());
-            assertEquals(account.getAccountId(), response.accountId());
-            assertEquals(initialBalance, response.beforeMoney());
-            assertEquals(chargeAmount, response.chargeAmount());
-            assertEquals(account.getBalance(), response.afterMoney());
-            assertEquals(now, response.transactionDate());
+            assertEquals(transaction.getTransactionId(), response.getTransactionId());
+            assertEquals(account.getAccountId(), response.getAccountId());
+            assertEquals(initialBalance, response.getBeforeMoney());
+            assertEquals(chargeAmount, response.getChargeAmount());
+            assertEquals(account.getBalance(), response.getAfterMoney());
+            assertEquals(now, response.getTransactionDate());
         }
     }
 }

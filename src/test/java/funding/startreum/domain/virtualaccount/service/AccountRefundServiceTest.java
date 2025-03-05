@@ -111,13 +111,13 @@ class AccountRefundServiceTest {
                     "프로젝트 currentfunding이 갱신되어야 합니다.");
 
             // 응답 검증
-            assertEquals(newTransaction.getTransactionId(), response.refundTransactionId());
-            assertEquals(originalTransactionId, response.originalTransactionId());
-            assertEquals(payerAccountId, response.accountId());
-            assertEquals(beforeBalance, response.beforeMoney());
-            assertEquals(refundAmount, response.refundAmount());
-            assertEquals(payerAccount.getBalance(), response.afterMoney());
-            assertEquals(now, response.transactionDate());
+            assertEquals(newTransaction.getTransactionId(), response.getRefundTransactionId());
+            assertEquals(originalTransactionId, response.getOriginalTransactionId());
+            assertEquals(payerAccountId, response.getAccountId());
+            assertEquals(beforeBalance, response.getBeforeMoney());
+            assertEquals(refundAmount, response.getRefundAmount());
+            assertEquals(payerAccount.getBalance(), response.getAfterMoney());
+            assertEquals(now, response.getTransactionDate());
         }
     }
 }

@@ -56,12 +56,17 @@ public class AccountChargeService {
     private AccountPaymentResponse chargeAccount(VirtualAccount account, AccountRequest request) {
         // 1. 잔액 업데이트
         BigDecimal beforeMoney = account.getBalance();
-        account.setBalance(account.getBalance().add(request.amount()));
+        account.setBalance(account.getBalance().add(request.getAmount()));
 
         // 2. 거래 내역 생성 (여기서 첫번째 파라미터는 외부 전달용 ID로, null로 처리)
-        Transaction transaction = transactionService.createTransaction(null, account, account, request.amount(), REMITTANCE);
+        Transaction transaction = transactionService.createTransaction(
+                null,
+                account,
+                account,
+                request.getAmount(),
+                REMITTANCE);
 
         // 3. 응답 객체 생성 및 반환
-        return mapToAccountPaymentResponse(account, transaction, beforeMoney, request.amount());
+        return mapToAccountPaymentResponse(account, transaction, beforeMoney, request.getAmount());
     }
 }
