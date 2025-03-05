@@ -5,7 +5,7 @@ import funding.startreum.domain.project.dto.*;
 import funding.startreum.domain.project.entity.Project;
 import funding.startreum.domain.project.repository.ProjectRepository;
 import funding.startreum.domain.project.service.ProjectService;
-import funding.startreum.domain.users.User;
+import funding.startreum.domain.users.entity.User;
 import funding.startreum.domain.users.repository.UserRepository;  // UserRepository import 추가
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -55,6 +56,7 @@ public class ProjectControllerTest {
     private Integer projectId;
 
     @BeforeEach
+    @Transactional
     void setUp() {
         // ✅ 1. 테스트용 사용자 생성
         User user = new User();
@@ -87,6 +89,7 @@ public class ProjectControllerTest {
 
     @Test
     @DisplayName("프로젝트 생성 테스트")
+    @Transactional
     void testCreateProject() throws Exception {
         // 프로젝트 생성 요청 DTO
         ProjectCreateRequestDto requestDto = new ProjectCreateRequestDto(
@@ -117,6 +120,7 @@ public class ProjectControllerTest {
     }
     @Test
     @DisplayName("프로젝트 수정 성공 테스트")
+    @Transactional
     void testModifyProject() throws Exception {
         // ✅ 4. 수정 요청 DTO 생성
         ProjectUpdateRequestDto requestDto = new ProjectUpdateRequestDto(
@@ -167,6 +171,7 @@ public class ProjectControllerTest {
     }
     @Test
     @DisplayName("프로젝트 삭제 성공 테스트")
+    @Transactional
     void testDeleteProject() throws Exception {
         // ✅ 4. projectService.deleteProject 모의 응답 설정
         BDDMockito.doNothing().when(projectService).deleteProject(any(Integer.class), any(String.class));
@@ -182,6 +187,7 @@ public class ProjectControllerTest {
 
     @Test
     @DisplayName("프로젝트 승인 요청 성공 테스트")
+    @Transactional
     void testRequestApprovalSuccess() throws Exception {
         // Mocking ProjectService의 응답
         ProjectApprovalResponseDto mockResponse = new ProjectApprovalResponseDto(
