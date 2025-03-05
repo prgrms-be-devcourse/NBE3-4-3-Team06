@@ -5,85 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>프로젝트 관리 - 관리자</title>
     <link rel="stylesheet" th:href="@{/css/admin_project.css}">
-
 </head>
 <body>
 <div class="admin-page">
-<!-- Sidebar -->
-<div class="sidebar">
-    <button onclick="location.href='#'">회원 관리</button>
-    <button onclick="location.href='/admin/project'">프로젝트 관리</button>
-    <button onclick="location.href='#'">송금 및 환불</button>
-    <button onclick="location.href='#'">문의 관리</button>
-</div>
-
-
-<!-- Header -->
-<div class="header">
-    <div class="header" th:replace="~{fragments/header :: header}"></div>
-</div>
-
-<!-- 프로젝트 관리 섹션 -->
-<section class="main-content container py-5">
-    <h1 class="fw-bold mb-4 text-center">프로젝트 관리</h1>
-
-    <!-- 상태 필터링 -->
-    <div class="mb-3 text-center">
-        <label for="statusFilter" class="form-label">승인 상태 선택:</label>
-        <select id="statusFilter" class="form-select w-auto d-inline-block">
-            <option value="">전체</option>
-            <option value="APPROVE">승인됨</option>
-            <option value="AWAITING_APPROVAL">승인 대기중</option>
-            <option value="REJECTED">거절됨</option>
-        </select>
-        <button class="btn btn-primary" onclick="loadProjects()">조회</button>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <button onclick="location.href='#'">회원 관리</button>
+        <button onclick="location.href='/admin/project'">프로젝트 관리</button>
+        <button onclick="location.href='#'">송금 및 환불</button>
+        <button onclick="location.href='#'">문의 관리</button>
     </div>
 
-    <!-- 프로젝트 리스트 -->
-    <table class="table table-striped table-hover">
-        <thead class="table-dark text-center">
-        <tr>
-            <th>프로젝트 ID</th>
-            <th>제목</th>
-            <th>상태</th>
-            <th>승인</th>
-            <th>목표 금액</th>
-            <th>현재 모집 금액</th>
-            <th>시작일</th>
-            <th>종료일</th>
-        </tr>
-        </thead>
-        <tbody id="project-list">
-        <!-- JavaScript로 데이터 동적 추가 -->
-        </tbody>
-    </table>
-</section>
+    <!-- Header -->
+    <div class="header">
+        <div class="header" th:replace="~{fragments/header :: header}"></div>
+    </div>
 
-<!-- 상태 변경 모달 -->
-<div id="editModal" class="modal">
-    <div class="modal-content">
-        <span class="close" onclick="closeEditModal()">&times;</span>
-        <h2>프로젝트 상태 변경</h2>
-        <p>승인 상태 및 진행 상태를 변경할 수 있습니다.</p>
+    <!-- 프로젝트 관리 섹션 -->
+    <section class="main-content container py-5">
+        <h1 class="fw-bold mb-4 text-center">프로젝트 관리</h1>
 
-        <label for="modalApprovalStatus">승인 상태:</label>
-        <select id="modalApprovalStatus" class="form-select">
-            <option value="APPROVE">승인</option>
-            <option value="AWAITING_APPROVAL">대기중</option>
-            <option value="REJECTED">거절</option>
-        </select>
+        <!-- 상태 필터링 -->
+        <div class="mb-3 text-center">
+            <label for="statusFilter" class="form-label">승인 상태 선택:</label>
+            <select id="statusFilter" class="form-select w-auto d-inline-block">
+                <option value="">전체</option>
+                <option value="APPROVE">승인됨</option>
+                <option value="AWAITING_APPROVAL">승인 대기중</option>
+                <option value="REJECTED">거절됨</option>
+            </select>
+            <button class="btn btn-primary" onclick="loadProjects()">조회</button>
+        </div>
 
-        <label for="modalProjectStatus">진행 상태:</label>
-        <select id="modalProjectStatus" class="form-select">
-            <option value="ONGOING">진행중</option>
-            <option value="SUCCESS">성공</option>
-            <option value="FAILED">실패</option>
-        </select>
+        <!-- 프로젝트 리스트 -->
+        <table class="table table-striped table-hover">
+            <thead class="table-dark text-center">
+            <tr>
+                <th>프로젝트 ID</th>
+                <th>제목</th>
+                <th>상태</th>
+                <th>승인</th>
+                <th>목표 금액</th>
+                <th>현재 모집 금액</th>
+                <th>시작일</th>
+                <th>종료일</th>
+            </tr>
+            </thead>
+            <tbody id="project-list">
+            <!-- JavaScript로 데이터 동적 추가 -->
+            </tbody>
+        </table>
+    </section>
 
-        <button class="btn btn-success mt-2" onclick="updateProjectStatus()">저장</button>
+    <!-- 상태 변경 모달 -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2>프로젝트 상태 변경</h2>
+            <p>승인 상태 및 진행 상태를 변경할 수 있습니다.</p>
+
+            <label for="modalApprovalStatus">승인 상태:</label>
+            <select id="modalApprovalStatus" class="form-select">
+                <option value="APPROVE">승인</option>
+                <option value="AWAITING_APPROVAL">대기중</option>
+                <option value="REJECTED">거절</option>
+            </select>
+
+            <label for="modalProjectStatus">진행 상태:</label>
+            <select id="modalProjectStatus" class="form-select">
+                <option value="ONGOING">진행중</option>
+                <option value="SUCCESS">성공</option>
+                <option value="FAILED">실패</option>
+            </select>
+
+            <button class="btn btn-success mt-2" onclick="updateProjectStatus()">저장</button>
+        </div>
     </div>
 </div>
-</div>
+
 <script>
     const statusTranslations = {
         "ONGOING": "진행중",
@@ -124,23 +123,32 @@
             }
 
             const data = await response.json();
+            console.log("🔍 프로젝트 데이터:", data);  // ✅ API 응답 확인
+
             const projectList = document.getElementById("project-list");
             projectList.innerHTML = "";
 
             data.forEach(project => {
                 const startDate = new Date(project.startDate).toISOString().split("T")[0];
                 const endDate = new Date(project.endDate).toISOString().split("T")[0];
-                const statusClass = project.status === "SUCCESS" ? 'status-success' :
-                                    project.status === "FAILED" ? 'status-failed' : 'status-ongoing';
+
+                const translatedStatus = statusTranslations[project.status] || "알 수 없음";
+                const translatedApproval = approvalStatusTranslations[project.isApproved] || "미확인";
 
                 projectList.innerHTML += `
                     <tr class="text-center">
                         <td>${project.projectId.toString().padStart(6, '0')}</td>
-                        <td>${project.title}</td>
-                        <td class="${statusClass}" onclick="openEditModal(${project.projectId})">${statusTranslations[project.status]}</td>
-                        <td class="approval-status" onclick="openEditModal(${project.projectId})">${approvalStatusTranslations[project.isApproved]}</td>
-                        <td>${project.fundingGoal.toLocaleString()} 원</td>
-                        <td>${project.currentFunding.toLocaleString()} 원</td>
+                        <td>${project.title || "제목 없음"}</td>
+                        <td class="${translatedStatus === '실패' ? 'status-failed' : 'status-ongoing'}"
+                            onclick="openEditModal(${project.projectId}, '${project.status}', '${project.isApproved}')">
+                            ${translatedStatus}
+                        </td>
+                        <td class="approval-status"
+                            onclick="openEditModal(${project.projectId}, '${project.status}', '${project.isApproved}')">
+                            ${translatedApproval}
+                        </td>
+                        <td>${(project.fundingGoal || 0).toLocaleString()} 원</td>
+                        <td>${(project.currentFunding || 0).toLocaleString()} 원</td>
                         <td>${startDate}</td>
                         <td>${endDate}</td>
                     </tr>
@@ -154,10 +162,12 @@
 
     let selectedProjectId = null;
 
-    function openEditModal(projectId) {
+    function openEditModal(projectId, status, isApproved) {
         selectedProjectId = projectId;
+        document.getElementById("modalApprovalStatus").value = isApproved || "AWAITING_APPROVAL";
+        document.getElementById("modalProjectStatus").value = status || "ONGOING";
         document.getElementById("editModal").style.display = "block";
-        window.scrollTo(0, 0);  // 모달 열릴 때 스크롤 상단으로 이동
+        window.scrollTo(0, 0);
     }
 
     function closeEditModal() {

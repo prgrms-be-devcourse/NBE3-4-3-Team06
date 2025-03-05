@@ -9,6 +9,8 @@ import funding.startreum.domain.project.entity.Project
 import funding.startreum.domain.transaction.entity.Transaction
 import funding.startreum.domain.transaction.repository.TransactionRepository
 import jakarta.persistence.EntityManager
+import org.slf4j.LoggerFactory
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Propagation
 import org.springframework.transaction.annotation.Transactional
@@ -23,10 +25,16 @@ open class ProjectAdminService(
     private val virtualAccountFindRepository: VirtualAccountFindRepository,
     private val transactionFindRepository: TransactionFindRepository
 ) {
+    private val logger = LoggerFactory.getLogger(ProjectAdminService::class.java)
 
+    /**
+     * 🔹 프로젝트 승인 상태 변경
+     * @param projectId 변경할 프로젝트 ID
+     * @param isApproved 새로운 승인 상태
+     */
     @Transactional
-     fun updateApprovalStatus(projectId: Int, isApproved: Project.ApprovalStatus) {
-        println("🟠 updateApprovalStatus() 실행됨 - projectId: $projectId, isApproved: $isApproved")
+    fun updateApprovalStatus(projectId: Int, isApproved: Project.ApprovalStatus) {
+        logger.info("🟠 프로젝트 승인 상태 변경 - projectId: $projectId, isApproved: $isApproved")
 
         val updatedRows = projectAdminRepository.updateApprovalStatus(projectId, isApproved)
         if (updatedRows == 0) {
@@ -34,21 +42,16 @@ open class ProjectAdminService(
         }
 
         entityManager.flush()
-
-        val project = projectAdminRepository.findById(projectId)
-            .orElseThrow { IllegalArgumentException("❌ 해당 프로젝트를 찾을 수 없습니다.") }
-
-        println("🟠 DB 저장 후 isApproved 값: ${project.isApproved}")
-
-        if (project.isApproved == Project.ApprovalStatus.REJECTED) {
-            println("🔢 프로젝트 승인 거절 -> isDeleted 변경 실행")
-            updateIsDeletedTransaction(projectId, true)
-        }
     }
 
+    /**
+     * 🔹 프로젝트 진행 상태 변경
+     * @param projectId 변경할 프로젝트 ID
+     * @param status 새로운 진행 상태
+     */
     @Transactional
-     fun updateProjectStatus(projectId: Int, status: Project.Status) {
-        println("🟠 updateProjectStatus() 실행됨 - projectId: $projectId, status: $status")
+    fun updateProjectStatus(projectId: Int, status: Project.Status) {
+        logger.info("🟠 프로젝트 진행 상태 변경 - projectId: $projectId, status: $status")
 
         val updatedRows = projectAdminRepository.updateProjectStatus(projectId, status)
         if (updatedRows == 0) {
@@ -56,48 +59,34 @@ open class ProjectAdminService(
         }
 
         entityManager.flush()
-
-        val project = projectAdminRepository.findById(projectId)
-            .orElseThrow { IllegalArgumentException("❌ 해당 프로젝트를 찾을 수 없습니다.") }
-
-        println("🟠 DB 저장 후 status 값: ${project.status}")
-
-        when (status) {
-            Project.Status.SUCCESS -> {
-                println("✅ 프로젝트 성공 - 후원 차단 및 삭제 처리")
-                updateIsDeletedTransaction(projectId, true)
-            }
-            Project.Status.FAILED -> {
-                println("🔢 프로젝트 실패 -> 후원자 환불 처리 및 삭제 처리 실행")
-                updateIsDeletedTransaction(projectId, true)
-                processRefunds(project)
-            }
-            else -> println("ℹ️ 프로젝트 상태 변경됨 - 추가 조치 없음")
-        }
     }
 
+    /**
+     * 🔹 프로젝트 삭제 상태 변경
+     * @param projectId 변경할 프로젝트 ID
+     * @param isDeleted 삭제 여부 (true: 삭제됨)
+     */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-     fun updateIsDeletedTransaction(projectId: Int, isDeleted: Boolean) {
+    fun updateIsDeletedTransaction(projectId: Int, isDeleted: Boolean) {
         projectAdminRepository.updateIsDeleted(projectId, isDeleted)
         entityManager.flush()
-        val projectAfterUpdate = projectAdminRepository.findById(projectId)
-            .orElseThrow { IllegalArgumentException("❌ 해당 프로젝트를 찾을 수 없습니다.") }
-        println("🟠 업데이트 후 isDeleted 값: ${projectAfterUpdate.isDeleted}")
     }
 
+    /**
+     * 🔹 프로젝트 실패 시 후원금을 환불 처리
+     * @param project 실패한 프로젝트
+     */
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-     fun processRefunds(project: Project) {
-        val projectId = project.projectId ?: throw IllegalArgumentException("프로젝트 ID가 null입니다.") // ✅ 널 체크 후 예외 처리
+    fun processRefunds(project: Project) {
+        val projectId = project.projectId ?: throw IllegalArgumentException("프로젝트 ID가 null입니다.")
         val fundings = fundingFindRepository.findActiveFundingsByProjectId(projectId)
 
         for (funding in fundings) {
             val sponsorAccount = virtualAccountFindRepository.findByUser_UserId(funding.sponsor.userId)
                 .orElseThrow { IllegalArgumentException("❌ 후원자의 가상 계좌를 찾을 수 없습니다.") }
 
-
             val fundingId = funding.fundingId ?: throw IllegalArgumentException("펀딩 ID가 null입니다.")
             val originalTransaction = transactionFindRepository.findByFunding_FundingId(fundingId)
-
                 .orElseThrow { IllegalArgumentException("❌ 해당 펀딩의 결제 트랜잭션을 찾을 수 없습니다.") }
 
             val beneficiaryAccount = originalTransaction.receiverAccount
@@ -127,14 +116,68 @@ open class ProjectAdminService(
             funding.isDeleted = true
             fundingFindRepository.save(funding)
 
-            println("🔢 환불 완료 - 후원자 ID: ${funding.sponsor.userId}, 환불 금액: $refundAmount")
+            logger.info("🔢 환불 완료 - 후원자 ID: ${funding.sponsor.userId}, 환불 금액: $refundAmount")
+        }
+    }
+
+    /**
+     * 🔹 프로젝트 승인 및 진행 상태 업데이트
+     * @param projectId 프로젝트 ID
+     * @param updateDto 업데이트할 승인 상태 및 진행 상태
+     */
+    @Transactional
+    fun updateProject(projectId: Int, updateDto: ProjectAdminUpdateDto) {
+        updateDto.isApproved?.let {
+            updateApprovalStatus(projectId, it)
+        }
+        updateDto.status?.let {
+            updateProjectStatus(projectId, it)
+        }
+    }
+
+    /**
+     * 🔹 매일 자정에 종료된 프로젝트의 상태를 자동으로 업데이트
+     * - 목표 금액을 달성하면 SUCCESS
+     * - 목표 금액을 달성하지 못하면 FAILED (환불 실행)
+     */
+    @Scheduled(cron = "0 0 0 * * *") //
+    @Transactional
+    fun autoUpdateProjectStatus() {
+        val now = LocalDateTime.now().withNano(0) // 밀리초 제거하여 비교 정확도 높이기
+
+        logger.info("🔎 현재 시간 기준: {}", now)
+
+        // ✅ 현재 실행할 조건을 로그로 출력
+        logger.info("🔎 실행할 조건 - end_date < {}, status not in ({}, {})", now, Project.Status.SUCCESS, Project.Status.FAILED)
+
+        // SUCCESS, FAILED 상태가 아닌 프로젝트만 조회
+        val expiredProjects = projectAdminRepository.findByEndDateBeforeAndStatusNotIn(
+            now, listOf(Project.Status.SUCCESS, Project.Status.FAILED)
+        )
+
+        // ✅ 조회된 프로젝트 목록 확인
+        logger.info("🔎 조회된 만료 프로젝트 수: {}", expiredProjects.size)
+
+        if (expiredProjects.isNotEmpty()) {
+            logger.info("⏳ [자동 업데이트] 종료된 프로젝트 ${expiredProjects.size}개 상태 업데이트")
+
+            for (project in expiredProjects) {
+                if (project.currentFunding >= project.fundingGoal) {
+                    // 목표 금액 달성 -> 성공 처리
+                    updateProjectStatus(project.projectId!!, Project.Status.SUCCESS)
+                    logger.info("✅ 프로젝트 성공 - projectId: ${project.projectId}, title: ${project.title}")
+                } else {
+                    // 목표 금액 미달 -> 실패 처리 및 환불 실행
+                    updateProjectStatus(project.projectId!!, Project.Status.FAILED)
+                    processRefunds(project)
+                    logger.info("🔴 프로젝트 실패 - projectId: ${project.projectId}, title: ${project.title}")
+                }
+            }
+        } else {
+            logger.info("✅ [자동 업데이트] 상태 변경할 프로젝트 없음")
         }
     }
 
 
-    @Transactional
-     fun updateProject(projectId: Int, updateDto: ProjectAdminUpdateDto) {
-        updateDto.isApproved?.let { updateApprovalStatus(projectId, it) }
-        updateDto.status?.let { updateProjectStatus(projectId, it) }
-    }
+
 }

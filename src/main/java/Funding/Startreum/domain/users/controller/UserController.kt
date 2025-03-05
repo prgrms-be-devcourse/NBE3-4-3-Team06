@@ -30,24 +30,19 @@ import java.util.*
     private val userService: UserService
 
 ) {
-    init {
-        println("✅ UserController initialized: $this")
-        println("✅ Injected UserService instance: $userService")
-    }
+
 
     // ✅ ID 중복 확인
     @GetMapping("/check-name")
     fun checkNameDuplicate(@RequestParam name: String): ResponseEntity<Boolean> {
-        println("🟠 checkNameDuplicate called with name: $name")
-        println("🟠 UserService instance inside method: $userService")
+
         return ResponseEntity.ok(userService.isNameDuplicate(name))
     }
 
     // ✅ 이메일 중복 확인
     @GetMapping("/check-email")
     fun checkEmailDuplicate(@RequestParam email: String): ResponseEntity<Boolean> {
-        println("🟠 checkEmailDuplicate called with email: $email")
-        println("🟠 UserService instance inside method: $userService")
+
         return ResponseEntity.ok(userService.isEmailDuplicate(email))
     }
 
