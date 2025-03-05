@@ -32,25 +32,25 @@ open class TransactionService(
      * 거래 내역 생성 메서드
      *
      * @param funding         관련 펀딩 내역
-     * @param senderAccount   자금 출금 계좌 (결제 시에는 결제자, 환불 시에는 프로젝트 계좌)
-     * @param receiverAccount 자금 입금 계좌 (결제 시에는 프로젝트 계좌, 환불 시에는 결제자 계좌)
+     * @param from   자금 출금 계좌 (결제 시에는 결제자, 환불 시에는 프로젝트 계좌)
+     * @param to 자금 입금 계좌 (결제 시에는 프로젝트 계좌, 환불 시에는 결제자 계좌)
      * @param amount          거래 금액
      * @param type            거래 유형 (REMITTANCE 또는 REFUND)
      * @return 생성된 Transaction 객체
      */
     @Transactional
     open fun createTransaction(
-        funding: Funding,
-        senderAccount: VirtualAccount,
-        receiverAccount: VirtualAccount,
+        funding: Funding?,
+        from: VirtualAccount,
+        to: VirtualAccount,
         amount: BigDecimal,
         type: TransactionType
     ): Transaction {
         val transaction = Transaction().apply {
             this.funding = funding
-            this.admin = userRepository.findByName("Admin").orElse(null)
-            this.senderAccount = senderAccount
-            this.receiverAccount = receiverAccount
+            this.admin = userRepository.findByName("funding.startreum.domain.admin.entity.Admin").orElse(null)
+            this.senderAccount = from
+            this.receiverAccount = to
             this.amount = amount
             this.type = type
             this.transactionDate = LocalDateTime.now()

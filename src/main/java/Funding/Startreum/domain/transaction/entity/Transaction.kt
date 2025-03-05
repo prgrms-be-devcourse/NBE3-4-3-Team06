@@ -16,7 +16,7 @@ class Transaction(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "funding_id", updatable = false)
-    var funding: Funding, // 펀딩 ID
+    var funding: Funding?, // 펀딩 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "admin_id", updatable = false)

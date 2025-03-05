@@ -5,13 +5,13 @@ import funding.startreum.domain.transaction.service.TransactionService;
 import funding.startreum.domain.virtualaccount.dto.request.AccountRequest;
 import funding.startreum.domain.virtualaccount.dto.response.AccountPaymentResponse;
 import funding.startreum.domain.virtualaccount.entity.VirtualAccount;
-import funding.startreum.domain.virtualaccount.repository.VirtualAccountRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -22,24 +22,22 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class AccountChargeServiceTest {
 
-    @MockitoBean
-    private VirtualAccountRepository virtualAccountRepository;
-
-    @MockitoBean
+    @Mock
     private TransactionService transactionService;
 
-    @MockitoBean
+    @Mock
     private AccountQueryService accountQueryService;
 
-    @Autowired
+    @InjectMocks
     private AccountChargeService accountChargeService;
 
     @Nested
     @DisplayName("chargeByAccountId() 테스트")
     class ChargeByAccountIdTests {
+
         @Test
         void testChargeByAccountId() {
             int accountId = 1;
@@ -54,7 +52,7 @@ class AccountChargeServiceTest {
 
             when(accountQueryService.getAccount(accountId)).thenReturn(account);
 
-            // 거래 생성 모의 (첫번째 파라미터 null)
+            // 거래 생성 모의 (외부 전달용 ID null)
             Transaction transaction = new Transaction();
             transaction.setTransactionId(1);
             LocalDateTime now = LocalDateTime.now();
@@ -64,7 +62,7 @@ class AccountChargeServiceTest {
 
             AccountPaymentResponse response = accountChargeService.chargeByAccountId(accountId, request);
 
-            // 충전 후 잔액은 초기 잔액 + 충전 금액이어야 함
+            // 충전 후 잔액 및 응답 검증
             assertEquals(initialBalance.add(chargeAmount), account.getBalance());
             assertEquals(transaction.getTransactionId(), response.getTransactionId());
             assertEquals(accountId, response.getAccountId());
@@ -85,6 +83,7 @@ class AccountChargeServiceTest {
             BigDecimal chargeAmount = BigDecimal.valueOf(30);
             AccountRequest request = new AccountRequest(chargeAmount);
 
+            // 테스트용 VirtualAccount 생성
             VirtualAccount account = new VirtualAccount();
             account.setAccountId(2);
             account.setBalance(initialBalance);
@@ -100,6 +99,7 @@ class AccountChargeServiceTest {
 
             AccountPaymentResponse response = accountChargeService.chargeByUsername(username, request);
 
+            // 충전 후 잔액 및 응답 검증
             assertEquals(initialBalance.add(chargeAmount), account.getBalance());
             assertEquals(transaction.getTransactionId(), response.getTransactionId());
             assertEquals(account.getAccountId(), response.getAccountId());
