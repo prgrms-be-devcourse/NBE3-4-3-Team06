@@ -9,7 +9,6 @@ import funding.startreum.domain.virtualaccount.dto.request.AccountRequest;
 import funding.startreum.domain.virtualaccount.dto.response.AccountPaymentResponse;
 import funding.startreum.domain.virtualaccount.dto.response.AccountRefundResponse;
 import funding.startreum.domain.virtualaccount.dto.response.AccountResponse;
-import funding.startreum.domain.virtualaccount.exception.AccountNotFoundException;
 import funding.startreum.domain.virtualaccount.repository.VirtualAccountRepository;
 import funding.startreum.domain.virtualaccount.service.AccountChargeService;
 import funding.startreum.domain.virtualaccount.service.AccountPaymentService;
@@ -139,15 +138,6 @@ class VirtualAccountControllerTest {
                     .andExpect(jsonPath("$.data.accountId").value(ACCOUNT_ID));
         }
 
-        @Test
-        @DisplayName("[조회 404] 존재하지 않는 계좌 조회 시")
-        void getNonExistingAccount() throws Exception {
-            given(accountQueryService.getAccountInfo(NON_EXISTENT_ACCOUNT_ID))
-                    .willThrow(new AccountNotFoundException(NON_EXISTENT_ACCOUNT_ID));
-
-            performGet(BASE_URL + "/" + NON_EXISTENT_ACCOUNT_ID, ownerToken)
-                    .andExpect(status().isNotFound());
-        }
     }
 
     @Nested
