@@ -19,7 +19,7 @@ interface MyFundingRepository : JpaRepository<Funding, Int> {
                 WHEN t.type = funding.startreum.domain.transaction.entity.Transaction.TransactionType.REMITTANCE THEN '송금 완료' 
                 ELSE '환불' 
             END as transactionStatus
-        FROM Funding f 
+        FROM funding f 
         JOIN f.project p 
         LEFT JOIN f.transactions t 
         WHERE f.sponsor.userId = :sponsorId AND f.isDeleted = false
