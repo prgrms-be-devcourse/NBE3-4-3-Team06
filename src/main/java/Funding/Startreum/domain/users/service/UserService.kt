@@ -1,21 +1,21 @@
 package funding.startreum.domain.users.service
 
-import funding.startreum.domain.users.entity.User
-import funding.startreum.common.util.JwtUtil
 import funding.startreum.domain.users.dto.SignupRequest
 import funding.startreum.domain.users.dto.UserResponse
+import funding.startreum.domain.users.entity.User
 import funding.startreum.domain.users.repository.UserRepository
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
+
 @Service
-class UserService(
+ class UserService(
     private val userRepository: UserRepository,
     private val passwordEncoder: PasswordEncoder,
-    private val jwtUtil: JwtUtil
-) {
+
+)  {
     // Refresh Token 저장소 (임시 Map 사용 → DB 또는 Redis로 변경 가능)
     private val refreshTokenStorage = mutableMapOf<String, String>()
 
@@ -68,14 +68,21 @@ class UserService(
      * 이름(ID) 중복 확인
      */
     fun isNameDuplicate(name: String): Boolean {
-        return userRepository.findByName(name).isPresent
+        println("🔍 Checking name duplication for: $name")
+        val result = userRepository.existsByName(name)
+        println("✅ Result: $result")
+        return result
     }
+
 
     /**
      * 이메일 중복 확인
      */
     fun isEmailDuplicate(email: String): Boolean {
-        return userRepository.findByEmail(email).isPresent
+        println("🔍 Checking email duplication for: $email")
+        val result = userRepository.existsByEmail(email)
+        println("✅ Result: $result")
+        return result
     }
 
     /**

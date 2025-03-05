@@ -17,70 +17,73 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.web.bind.annotation.*
-import java.net.URI
+import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
 @RestController
 @RequestMapping("/api/users")
-open class UserController(
-    private val userService: UserService,
+ open class UserController(
     private val jwtUtil: JwtUtil,
     private val refreshTokenRepository: RefreshTokenRepository,
     private val myFundingService: MyFundingService,
-    private val myProjectService: MyProjectService
+    private val myProjectService: MyProjectService,
+    private val userService: UserService
+
 ) {
+    init {
+        println("✅ UserController initialized: $this")
+        println("✅ Injected UserService instance: $userService")
+    }
 
     // ✅ ID 중복 확인
     @GetMapping("/check-name")
     fun checkNameDuplicate(@RequestParam name: String): ResponseEntity<Boolean> {
+        println("🟠 checkNameDuplicate called with name: $name")
+        println("🟠 UserService instance inside method: $userService")
         return ResponseEntity.ok(userService.isNameDuplicate(name))
     }
 
     // ✅ 이메일 중복 확인
     @GetMapping("/check-email")
     fun checkEmailDuplicate(@RequestParam email: String): ResponseEntity<Boolean> {
+        println("🟠 checkEmailDuplicate called with email: $email")
+        println("🟠 UserService instance inside method: $userService")
         return ResponseEntity.ok(userService.isEmailDuplicate(email))
     }
 
     // ✅ 회원가입 처리 (REST API)
     @PostMapping("/registrar")
-    fun registerUser(
+     fun  registerUser(
         @RequestParam name: String,
         @RequestParam email: String,
         @RequestParam password: String,
         @RequestParam role: User.Role
     ): ResponseEntity<Unit> {
-        val signupRequest = SignupRequest(name, email, password, role)
-        userService.registerUser(signupRequest)
-
-        val headers = HttpHeaders()
-        headers.location = URI.create("/")
-        return ResponseEntity(headers, HttpStatus.FOUND)
+        userService.registerUser(SignupRequest(name, email, password, role))
+        return ResponseEntity.status(HttpStatus.FOUND)
+            .header(HttpHeaders.LOCATION, "/")
+            .build()
     }
 
     // ✅ 로그아웃
     @PostMapping("/logout")
-    fun logout(): ResponseEntity<Map<String, String>> {
+     fun  logout(): ResponseEntity<Map<String, String>> {
         val authentication = SecurityContextHolder.getContext().authentication
         return if (authentication == null || !authentication.isAuthenticated) {
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(mapOf("status" to "error", "message" to "로그인 상태가 아닙니다."))
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(mapOf("status" to "error", "message" to "로그인 상태가 아닙니다."))
         } else {
             SecurityContextHolder.clearContext()
             ResponseEntity.ok(mapOf("status" to "success", "message" to "로그아웃 성공"))
         }
     }
 
-    // ✅ `LoginRequest` 정의 추가
-    data class LoginRequest(
-        val name: String,
-        val password: String
-    )
+    // ✅ 로그인 요청 데이터 클래스
+    data class LoginRequest(val name: String, val password: String)
 
     // ✅ 로그인 API (JWT 발급)
     @PostMapping("/login")
-    fun loginUser(@RequestBody loginRequest: LoginRequest): ResponseEntity<Any> {
-        return try {
+     fun  loginUser(@RequestBody loginRequest: LoginRequest): ResponseEntity<Any> =
+        try {
             val user = userService.authenticateUser(loginRequest.name, loginRequest.password)
 
             refreshTokenRepository.deleteByUsername(user.name)
@@ -88,33 +91,29 @@ open class UserController(
             val accessToken = jwtUtil.generateAccessToken(user.name, user.email, user.role.name)
             val refreshToken = jwtUtil.generateRefreshToken(user.name)
 
-            val refreshTokenEntity = RefreshToken(
-                token = refreshToken,
-                username = user.name,
-                expiryDate = Date(System.currentTimeMillis() + jwtUtil.refreshTokenExpiration)
+            refreshTokenRepository.save(
+                RefreshToken(
+                    token = refreshToken,
+                    username = user.name,
+                    expiryDate = Date(System.currentTimeMillis() + jwtUtil.refreshTokenExpiration)
+                )
             )
-            refreshTokenRepository.save(refreshTokenEntity)
 
             ResponseEntity.ok(
                 mapOf(
                     "accessToken" to accessToken,
                     "refreshToken" to refreshToken,
                     "userName" to user.name,
-                    "role" to user.role.name,
-                    "refreshTokenExpiry" to refreshTokenEntity.expiryDate.time
+                    "role" to user.role.name
                 )
             )
-        } catch (e: IllegalArgumentException) {
-            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(mapOf("error" to e.message))
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(mapOf("error" to "서버 내부 오류 발생"))
+            ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(mapOf("error" to (e.message ?: "로그인 실패")))
         }
-    }
 
     // ✅ Access Token 갱신 (Refresh Token 사용)
     @PostMapping("/refresh")
-    fun refreshAccessToken(@RequestBody request: Map<String, String>): ResponseEntity<Any> {
+     fun  refreshAccessToken(@RequestBody request: Map<String, String>): ResponseEntity<Any> {
         val refreshToken = request["refreshToken"] ?: return ResponseEntity
             .status(HttpStatus.FORBIDDEN)
             .body(mapOf("error" to "유효하지 않은 Refresh Token"))
@@ -124,19 +123,11 @@ open class UserController(
         }
 
         val name = jwtUtil.getNameFromToken(refreshToken)
+            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "유효하지 않은 Refresh Token입니다.")
 
-        // ✅ Optional 값 안전 처리 (orElse(null) 사용)
         val storedToken = refreshTokenRepository.findByToken(refreshToken)?.orElse(null)
-
-        // ✅ storedToken이 null이면 오류 처리
-        if (storedToken == null) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+            ?: return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(mapOf("error" to "Refresh Token이 존재하지 않습니다. 다시 로그인하세요."))
-        }
-
-        if (refreshToken != storedToken.token) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(mapOf("error" to "Refresh Token 불일치"))
-        }
 
         if (storedToken.expiryDate.before(Date())) {
             refreshTokenRepository.deleteByToken(refreshToken)
@@ -144,24 +135,18 @@ open class UserController(
         }
 
         val user = userService.getUserByName(name)
-        val newAccessToken = jwtUtil.generateAccessToken(user.name, user.email, user.role.name)
-
-        return ResponseEntity.ok(mapOf("accessToken" to newAccessToken))
+        return ResponseEntity.ok(mapOf("accessToken" to jwtUtil.generateAccessToken(user.name, user.email, user.role.name)))
     }
-
 
     // ✅ 사용자 프로필 조회 (본인 또는 관리자만 가능)
     @GetMapping("/profile/{name}")
     @PreAuthorize("#name == authentication.name or hasRole('ADMIN')")
-    fun getUserProfile(@PathVariable name: String): ResponseEntity<Any> {
-        val authentication = SecurityContextHolder.getContext().authentication ?: return ResponseEntity
-            .status(HttpStatus.UNAUTHORIZED)
-            .body(mapOf("error" to "인증되지 않은 요청입니다."))
-
-        val loggedInUsername = authentication.name
-
+     fun  getUserProfile(@PathVariable name: String): ResponseEntity<Any> {
         val targetUser = userService.getUserByName(name)
 
+
+
+        // ✅ 수정 코드
         val userProfile = UserResponse(
             name = targetUser.name,
             email = targetUser.email,
@@ -173,51 +158,32 @@ open class UserController(
         return ResponseEntity.ok(mapOf("status" to "success", "data" to userProfile))
     }
 
+
     // ✅ 이메일 수정 API
-    @PutMapping("profile/modify/{name}")
+    @PutMapping("/profile/modify/{name}")
     @PreAuthorize("#name == authentication.name or hasRole('ROLE_ADMIN')")
-    fun updateEmail(@PathVariable name: String, @Valid @RequestBody request: EmailUpdateRequest): ResponseEntity<Any> {
-        val authentication = SecurityContextHolder.getContext().authentication ?: return ResponseEntity
-            .status(HttpStatus.FORBIDDEN)
-            .body(mapOf("error" to "권한이 없습니다."))
-
-        if (authentication.name != name) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(mapOf("error" to "권한이 없습니다."))
-        }
-
+     fun  updateEmail(@PathVariable name: String, @Valid @RequestBody request: EmailUpdateRequest): ResponseEntity<Any> {
         userService.updateUserEmail(name, request.newEmail)
         return ResponseEntity.ok(mapOf("message" to "이메일이 성공적으로 변경되었습니다."))
     }
 
     // ✅ 로그인한 사용자의 후원 내역 조회
-    @GetMapping("/fundings/{username}")
+    @GetMapping("/open fun dings/{username}")
     @PreAuthorize("isAuthenticated()")
-    fun getFundingsByUsername(@PathVariable username: String): ResponseEntity<Any> {
-        val authentication = SecurityContextHolder.getContext().authentication
-
-        if (authentication == null || authentication.name != username) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(mapOf("error" to "권한이 없습니다."))
-        }
-
+     fun  getFundingsByUsername(@PathVariable username: String): ResponseEntity<Any> {
         val user = userService.getUserByName(username)
-        val fundings = myFundingService.getMyFundings(user.userId)
-
-        return ResponseEntity.ok(mapOf("status" to "success", "data" to fundings))
+        return ResponseEntity.ok(mapOf("status" to "success", "data" to myFundingService.getMyFundings(user.userId)))
     }
 
     // ✅ 로그인한 수혜자의 프로젝트 목록 조회
     @GetMapping("/projects/{username}")
     @PreAuthorize("hasRole('ROLE_BENEFICIARY') and #username == authentication.name")
-    fun getMyProjects(@PathVariable username: String): ResponseEntity<Any> {
-        val authentication = SecurityContextHolder.getContext().authentication
-
-        if (authentication == null || authentication.name != username) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body(mapOf("error" to "권한이 없습니다."))
-        }
-
+     fun getMyProjects(@PathVariable username: String): ResponseEntity<Any> {
         val projects = myProjectService.getProjectsByUser(username)
+
+
+        // ✅ 수정 코드
         return ResponseEntity.ok(mapOf("status" to "success", "data" to projects))
     }
+
 }
