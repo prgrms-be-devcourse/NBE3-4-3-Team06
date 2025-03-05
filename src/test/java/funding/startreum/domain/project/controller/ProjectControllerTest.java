@@ -5,8 +5,8 @@ import funding.startreum.domain.project.dto.*;
 import funding.startreum.domain.project.entity.Project;
 import funding.startreum.domain.project.repository.ProjectRepository;
 import funding.startreum.domain.project.service.ProjectService;
-import funding.startreum.domain.users.User;
-import funding.startreum.domain.users.repository.UserRepository;  // UserRepository import 추가
+import funding.startreum.domain.users.entity.User;
+import funding.startreum.domain.users.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,12 +24,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -115,6 +112,7 @@ public class ProjectControllerTest {
         // 응답 검증
         result.andExpect(status().isCreated()); // 응답 코드가 201 Created이어야 함
     }
+
     @Test
     @DisplayName("프로젝트 수정 성공 테스트")
     void testModifyProject() throws Exception {
@@ -165,6 +163,7 @@ public class ProjectControllerTest {
                 .andExpect(jsonPath("$.data.startDate").value("2025-02-10T00:00:00"))
                 .andExpect(jsonPath("$.data.endDate").value("2025-03-10T00:00:00"));
     }
+
     @Test
     @DisplayName("프로젝트 삭제 성공 테스트")
     void testDeleteProject() throws Exception {

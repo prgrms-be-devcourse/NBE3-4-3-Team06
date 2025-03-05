@@ -1,7 +1,6 @@
 package funding.startreum.domain.sponsor;
 
 import funding.startreum.common.util.JwtUtil;
-import funding.startreum.domain.inquiry.InquiryResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;

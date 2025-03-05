@@ -1,22 +1,25 @@
 package funding.startreum.domain.project.service;
 
+import funding.startreum.common.util.JwtUtil;
 import funding.startreum.domain.project.dto.*;
 import funding.startreum.domain.project.entity.Project;
 import funding.startreum.domain.project.repository.ProjectRepository;
-import funding.startreum.domain.users.User;
+import funding.startreum.domain.users.entity.User;
 import funding.startreum.domain.users.repository.UserRepository;
-import funding.startreum.common.util.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
 class ProjectServiceTest {
@@ -131,13 +134,13 @@ class ProjectServiceTest {
         Project project = new Project();
         project.setProjectId(projectId);
         project.setCreator(testUser);
-        project.setIsApproved(Project.ApprovalStatus.AWAITING_APPROVAL);
+        project.setApproved(Project.ApprovalStatus.AWAITING_APPROVAL);
 
         Mockito.when(projectRepository.findById(projectId)).thenReturn(Optional.of(project));
 
         ProjectApprovalResponseDto response = projectService.requestApprove(projectId, JWT_TOKEN);
 
         assertNotNull(response);
-        assertEquals("AWAITING_APPROVAL", response.status);
+        assertEquals("AWAITING_APPROVAL", response.getStatus());
     }
 }

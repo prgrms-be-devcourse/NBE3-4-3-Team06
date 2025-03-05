@@ -1,6 +1,5 @@
 package funding.startreum.domain.virtualaccount.controller;
 
-import funding.startreum.domain.virtualaccount.service.VirtualAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,9 +11,6 @@ import java.security.Principal;
 @Controller
 @RequiredArgsConstructor
 public class VirtualAccountViewController {
-
-
-    private final VirtualAccountService virtualAccountService;
 
     /**
      * 계좌 관리 페이지 반환 (뷰만 제공)
