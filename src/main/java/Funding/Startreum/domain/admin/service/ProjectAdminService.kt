@@ -25,7 +25,7 @@ open class ProjectAdminService(
 ) {
 
     @Transactional
-    open fun updateApprovalStatus(projectId: Int, isApproved: Project.ApprovalStatus) {
+     fun updateApprovalStatus(projectId: Int, isApproved: Project.ApprovalStatus) {
         println("🟠 updateApprovalStatus() 실행됨 - projectId: $projectId, isApproved: $isApproved")
 
         val updatedRows = projectAdminRepository.updateApprovalStatus(projectId, isApproved)
@@ -47,7 +47,7 @@ open class ProjectAdminService(
     }
 
     @Transactional
-    open fun updateProjectStatus(projectId: Int, status: Project.Status) {
+     fun updateProjectStatus(projectId: Int, status: Project.Status) {
         println("🟠 updateProjectStatus() 실행됨 - projectId: $projectId, status: $status")
 
         val updatedRows = projectAdminRepository.updateProjectStatus(projectId, status)
@@ -77,7 +77,7 @@ open class ProjectAdminService(
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    open fun updateIsDeletedTransaction(projectId: Int, isDeleted: Boolean) {
+     fun updateIsDeletedTransaction(projectId: Int, isDeleted: Boolean) {
         projectAdminRepository.updateIsDeleted(projectId, isDeleted)
         entityManager.flush()
         val projectAfterUpdate = projectAdminRepository.findById(projectId)
@@ -86,7 +86,7 @@ open class ProjectAdminService(
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    open fun processRefunds(project: Project) {
+     fun processRefunds(project: Project) {
         val projectId = project.projectId ?: throw IllegalArgumentException("프로젝트 ID가 null입니다.") // ✅ 널 체크 후 예외 처리
         val fundings = fundingFindRepository.findActiveFundingsByProjectId(projectId)
 
@@ -133,7 +133,7 @@ open class ProjectAdminService(
 
 
     @Transactional
-    open fun updateProject(projectId: Int, updateDto: ProjectAdminUpdateDto) {
+     fun updateProject(projectId: Int, updateDto: ProjectAdminUpdateDto) {
         updateDto.isApproved?.let { updateApprovalStatus(projectId, it) }
         updateDto.status?.let { updateProjectStatus(projectId, it) }
     }

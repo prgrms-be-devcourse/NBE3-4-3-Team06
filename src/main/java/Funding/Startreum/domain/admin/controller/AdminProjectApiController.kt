@@ -1,16 +1,14 @@
 package funding.startreum.domain.admin.controller
 
-import funding.startreum.domain.admin.repository.ProjectAdminRepository
 import funding.startreum.domain.admin.dto.ProjectAdminSearchDto
+import funding.startreum.domain.admin.dto.ProjectAdminUpdateDto
+import funding.startreum.domain.admin.repository.ProjectAdminRepository
 import funding.startreum.domain.admin.service.ProjectAdminService
 import funding.startreum.domain.project.entity.Project
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/admin/projects")
@@ -52,7 +50,7 @@ class AdminProjectApiController(
     /**
      * 🔹 프로젝트 승인 및 진행 상태 변경 API
      */
-    /*
+
     @PatchMapping("/{projectId}/update")
     fun updateProjectStatus(
         @PathVariable projectId: Int,
@@ -68,5 +66,5 @@ class AdminProjectApiController(
 
         return ResponseEntity.ok("✅ 프로젝트 상태가 변경되었습니다.")
     }
-    */
+
 }
