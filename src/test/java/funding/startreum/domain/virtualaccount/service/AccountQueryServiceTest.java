@@ -15,10 +15,10 @@ import funding.startreum.domain.virtualaccount.repository.VirtualAccountReposito
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,32 +28,31 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
-@AutoConfigureMockMvc
+@ExtendWith(MockitoExtension.class)
 class AccountQueryServiceTest {
 
-    @MockitoBean
+    @Mock
     private VirtualAccountRepository virtualAccountRepository;
 
-    @MockitoBean
+    @Mock
     private TransactionRepository transactionRepository;
 
-    @MockitoBean
+    @Mock
     private UserRepository userRepository;
 
-    @MockitoBean
+    @Mock
     private ProjectRepository projectRepository;
 
-    @MockitoBean
+    @Mock
     private FundingService fundingService;
 
-    @MockitoBean
+    @Mock
     private TransactionService transactionService;
 
-    @MockitoBean
+    @Mock
     private ProjectService projectService;
 
-    @Autowired
+    @InjectMocks
     private AccountQueryService accountQueryService;
 
     @Nested
@@ -63,45 +62,49 @@ class AccountQueryServiceTest {
         @Test
         @DisplayName("유저를 찾을 수 없는 경우")
         void whenUserNotFound_thenReturnDtosWithFalse() {
+            // Given
             String name = "nonexistent";
             when(userRepository.findByName(name)).thenReturn(Optional.empty());
 
+            // When
             VirtualAccountDtos dtos = accountQueryService.findByName(name);
 
+            // Then
             assertFalse(dtos.isAccountExists(), "User가 없으면 isAccountExists는 false여야 합니다.");
         }
 
         @Test
         @DisplayName("유저는 존재하지만 계좌를 찾을 수 없는 경우")
         void whenUserFoundButAccountNotFound_thenReturnDtosWithFalse() {
+            // Given
             String name = "user";
-            User user = new User();
-            user.setUserId(1);
+            User user = createUser(1);
             when(userRepository.findByName(name)).thenReturn(Optional.of(user));
             when(virtualAccountRepository.findByUser_UserId(user.getUserId())).thenReturn(Optional.empty());
 
+            // When
             VirtualAccountDtos dtos = accountQueryService.findByName(name);
 
+            // Then
             assertFalse(dtos.isAccountExists(), "계좌가 없으면 isAccountExists는 false여야 합니다.");
         }
 
         @Test
         @DisplayName("계좌가 올바르게 존재할 경우")
         void whenUserAndAccountFound_thenReturnDtosFromEntity() {
+            // Given
             String name = "user";
-            User user = new User();
-            user.setUserId(1);
+            User user = createUser(1);
             when(userRepository.findByName(name)).thenReturn(Optional.of(user));
-
-            VirtualAccount account = new VirtualAccount();
-            account.setUser(user);
-            account.setBalance(BigDecimal.valueOf(100));
+            VirtualAccount account = createVirtualAccount(user, BigDecimal.valueOf(100));
             account.setCreatedAt(LocalDateTime.now());
             account.setUpdatedAt(LocalDateTime.now());
             when(virtualAccountRepository.findByUser_UserId(user.getUserId())).thenReturn(Optional.of(account));
 
+            // When
             VirtualAccountDtos dtos = accountQueryService.findByName(name);
 
+            // Then
             assertTrue(dtos.isAccountExists(), "계좌가 존재하면 isAccountExists는 true여야 합니다.");
             assertEquals(BigDecimal.valueOf(100), dtos.getBalance(), "계좌 잔액이 매핑되어야 합니다.");
         }
@@ -114,9 +117,11 @@ class AccountQueryServiceTest {
         @Test
         @DisplayName("유저를 찾을 수 없는 경우")
         void whenUserNotFound_thenThrowException() {
+            // Given
             String name = "nonexistent";
             when(userRepository.findByName(name)).thenReturn(Optional.empty());
 
+            // When & Then
             Exception exception = assertThrows(IllegalArgumentException.class, () ->
                     accountQueryService.createAccount(name)
             );
@@ -127,15 +132,14 @@ class AccountQueryServiceTest {
         @Test
         @DisplayName("계좌가 이미 존재할 경우")
         void whenAccountAlreadyExists_thenThrowException() {
+            // Given
             String name = "user";
-            User user = new User();
-            user.setUserId(1);
+            User user = createUser(1);
             when(userRepository.findByName(name)).thenReturn(Optional.of(user));
-
-            VirtualAccount existingAccount = new VirtualAccount();
-            existingAccount.setUser(user);
+            VirtualAccount existingAccount = createVirtualAccount(user, BigDecimal.TEN);
             when(virtualAccountRepository.findByUser_UserId(user.getUserId())).thenReturn(Optional.of(existingAccount));
 
+            // When & Then
             Exception exception = assertThrows(IllegalStateException.class, () ->
                     accountQueryService.createAccount(name)
             );
@@ -145,9 +149,9 @@ class AccountQueryServiceTest {
         @Test
         @DisplayName("계좌를 성공적으로 생성했을 경우")
         void whenValid_thenCreateAccount() {
+            // Given
             String name = "user";
-            User user = new User();
-            user.setUserId(1);
+            User user = createUser(1);
             when(userRepository.findByName(name)).thenReturn(Optional.of(user));
             when(virtualAccountRepository.findByUser_UserId(user.getUserId())).thenReturn(Optional.empty());
             when(virtualAccountRepository.save(any(VirtualAccount.class)))
@@ -157,8 +161,10 @@ class AccountQueryServiceTest {
                         return account;
                     });
 
+            // When
             VirtualAccountDtos dtos = accountQueryService.createAccount(name);
 
+            // Then
             assertTrue(dtos.isAccountExists(), "계좌 생성 시 success flag는 true여야 합니다.");
             assertEquals(BigDecimal.ZERO, dtos.getBalance(), "새 계좌의 초기 잔액은 0이어야 합니다.");
             verify(virtualAccountRepository, times(1)).save(any(VirtualAccount.class));
@@ -172,14 +178,15 @@ class AccountQueryServiceTest {
         @Test
         @DisplayName("계좌 ID 기반 계좌 정보 조회")
         void testGetAccountInfoByAccountId() {
+            // Given
             int accountId = 1;
-            VirtualAccount account = new VirtualAccount();
-            account.setAccountId(accountId);
-            account.setBalance(BigDecimal.valueOf(500));
+            VirtualAccount account = createVirtualAccount(accountId, BigDecimal.valueOf(500));
             when(virtualAccountRepository.findById(accountId)).thenReturn(Optional.of(account));
 
+            // When
             AccountResponse response = accountQueryService.getAccountInfo(accountId);
 
+            // Then
             assertNotNull(response, "계좌 정보 응답은 null이 아니어야 합니다.");
             assertEquals(accountId, response.getAccountId(), "응답 계좌 ID가 일치해야 합니다.");
         }
@@ -187,19 +194,19 @@ class AccountQueryServiceTest {
         @Test
         @DisplayName("username 기반 계좌 정보 조회")
         void testGetAccountInfoByUsername() {
+            // Given
+            int accountId = 1;
             String username = "userInfo";
-            VirtualAccount account = new VirtualAccount();
-            account.setAccountId(2);
-            account.setBalance(BigDecimal.valueOf(750));
-            User user = new User();
-            user.setName(username);
-            account.setUser(user);
+            User user = createUser(2);
+            VirtualAccount account = createVirtualAccount(user, BigDecimal.valueOf(750));
             when(virtualAccountRepository.findByUser_Name(username)).thenReturn(Optional.of(account));
 
+            // When
             AccountResponse response = accountQueryService.getAccountInfo(username);
 
+            // Then
             assertNotNull(response, "계좌 정보 응답은 null이 아니어야 합니다.");
-            assertEquals(2, response.getAccountId(), "응답 계좌 ID가 일치해야 합니다.");
+            assertEquals(1, response.getAccountId(), "응답 계좌 ID가 일치해야 합니다.");
         }
     }
 
@@ -210,19 +217,45 @@ class AccountQueryServiceTest {
         @Test
         @DisplayName("계좌 ID로 계좌를 찾을 수 없는 경우")
         void whenAccountNotFoundById_thenThrowAccountNotFoundException() {
+            // Given
             int accountId = 999;
             when(virtualAccountRepository.findById(accountId)).thenReturn(Optional.empty());
 
+            // When & Then
             assertThrows(AccountNotFoundException.class, () -> accountQueryService.getAccount(accountId));
         }
 
         @Test
         @DisplayName("username으로 계좌를 찾을 수 없는 경우")
         void whenAccountNotFoundByUsername_thenThrowAccountNotFoundException() {
+            // Given
             String username = "nonexistentUser";
             when(virtualAccountRepository.findByUser_Name(username)).thenReturn(Optional.empty());
 
+            // When & Then
             assertThrows(AccountNotFoundException.class, () -> accountQueryService.getAccount(username));
         }
+    }
+
+    // 헬퍼 메서드들
+    private User createUser(int userId) {
+        User user = new User();
+        user.setUserId(userId);
+        return user;
+    }
+
+    private VirtualAccount createVirtualAccount(User user, BigDecimal balance) {
+        VirtualAccount account = new VirtualAccount();
+        account.setAccountId(1);
+        account.setUser(user);
+        account.setBalance(balance);
+        return account;
+    }
+
+    private VirtualAccount createVirtualAccount(int accountId, BigDecimal balance) {
+        VirtualAccount account = new VirtualAccount();
+        account.setAccountId(accountId);
+        account.setBalance(balance);
+        return account;
     }
 }

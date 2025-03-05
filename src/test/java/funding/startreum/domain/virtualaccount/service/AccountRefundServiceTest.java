@@ -1,6 +1,5 @@
 package funding.startreum.domain.virtualaccount.service;
 
-
 import funding.startreum.domain.funding.entity.Funding;
 import funding.startreum.domain.funding.service.FundingService;
 import funding.startreum.domain.project.entity.Project;
@@ -12,9 +11,10 @@ import funding.startreum.domain.virtualaccount.entity.VirtualAccount;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -24,22 +24,22 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class AccountRefundServiceTest {
 
-    @MockitoBean
+    @Mock
     private TransactionService transactionService;
 
-    @MockitoBean
+    @Mock
     private AccountQueryService accountQueryService;
 
-    @MockitoBean
+    @Mock
     private FundingService fundingService;
 
-    @MockitoBean
+    @Mock
     private ProjectRepository projectRepository;
 
-    @Autowired
+    @InjectMocks
     private AccountRefundService accountRefundService;
 
     @Nested
@@ -47,71 +47,58 @@ class AccountRefundServiceTest {
     class RefundTests {
         @Test
         void testRefund() {
+            // Given: 테스트 데이터 및 목(mock) 설정
             int payerAccountId = 1;
             int originalTransactionId = 10;
             BigDecimal refundAmount = BigDecimal.valueOf(50);
 
-            // 1) 원 거래 설정
-            Transaction oldTransaction = new Transaction();
-            oldTransaction.setTransactionId(originalTransactionId);
-            oldTransaction.setAmount(refundAmount);
-            Funding oldfunding = new Funding();
-            oldfunding.setFundingId(100);
-            oldTransaction.setFunding(oldfunding);
+            Transaction oldTransaction = createOldTransaction(originalTransactionId, refundAmount, 100);
             when(transactionService.getTransaction(originalTransactionId)).thenReturn(oldTransaction);
 
-            // 2) 환불 받을 계좌 (결제자) 설정 (초기 잔액 100)
-            VirtualAccount payerAccount = new VirtualAccount();
-            payerAccount.setAccountId(payerAccountId);
-            payerAccount.setBalance(BigDecimal.valueOf(100));
+            VirtualAccount payerAccount = createVirtualAccount(payerAccountId, BigDecimal.valueOf(100));
             when(accountQueryService.getAccount(payerAccountId)).thenReturn(payerAccount);
 
-            // 3) 수혜자 계좌 설정 (프로젝트 계좌, 초기 잔액 200)
-            VirtualAccount projectAccount = spy(new VirtualAccount());
-            projectAccount.setAccountId(2);
-            projectAccount.setBalance(BigDecimal.valueOf(200));
+            VirtualAccount projectAccount = spy(createVirtualAccount(2, BigDecimal.valueOf(200)));
             when(accountQueryService.getReceiverAccountByTransactionId(originalTransactionId)).thenReturn(projectAccount);
 
-            // transferTo 메서드 호출 시 잔액 업데이트 모의
+            // projectAccount의 transferTo 메서드가 호출될 때 실제 잔액 변경이 일어나도록 모의
             doAnswer(invocation -> {
-                // projectAccount에서 refundAmount 차감, payerAccount에 더하기
                 payerAccount.setBalance(payerAccount.getBalance().add(refundAmount));
                 projectAccount.setBalance(projectAccount.getBalance().subtract(refundAmount));
                 return null;
             }).when(projectAccount).transferTo(eq(refundAmount), eq(payerAccount));
 
-            // 4) 펀딩 취소 모의
-            Funding canceledfunding = new Funding();
-            canceledfunding.setFundingId(101);
-            when(fundingService.cancelFunding(oldfunding.getFundingId())).thenReturn(canceledfunding);
+            Funding canceledFunding = new Funding();
+            canceledFunding.setFundingId(101);
+            when(fundingService.cancelFunding(oldTransaction.getFunding().getFundingId()))
+                    .thenReturn(canceledFunding);
 
-            // 5) 환불 거래 생성 모의
-            Transaction newTransaction = new Transaction();
-            newTransaction.setTransactionId(20);
             LocalDateTime now = LocalDateTime.now();
-            newTransaction.setTransactionDate(now);
-            when(transactionService.createTransaction(eq(canceledfunding), eq(projectAccount), eq(payerAccount), eq(refundAmount), eq(REFUND)))
-                    .thenReturn(newTransaction);
+            Transaction refundTransaction = createRefundTransaction(20, now);
+            when(transactionService.createTransaction(
+                    eq(canceledFunding),
+                    eq(projectAccount),
+                    eq(payerAccount),
+                    eq(refundAmount),
+                    eq(REFUND)
+            )).thenReturn(refundTransaction);
 
-            // 6) 프로젝트 조회 및 currentfunding 업데이트 모의
             Project project = new Project();
             project.setCurrentFunding(BigDecimal.valueOf(80));
             when(projectRepository.findProjectByTransactionId(originalTransactionId)).thenReturn(project);
 
-            // 호출 전 결제자 계좌의 잔액 캡처
             BigDecimal beforeBalance = payerAccount.getBalance();
 
+            // When: 환불 실행
             AccountRefundResponse response = accountRefundService.refund(payerAccountId, originalTransactionId);
 
-            // transferTo에 의해 payerAccount 잔액은 증가(refundAmount 만큼)
-            assertEquals(beforeBalance.add(refundAmount), payerAccount.getBalance(), "환불 후 결제자 계좌 잔액이 갱신되어야 합니다.");
-            // 프로젝트의 currentfunding은 환불 금액만큼 차감되어야 함
+            // Then: 환불 후 결과 검증
+            assertEquals(beforeBalance.add(refundAmount), payerAccount.getBalance(),
+                    "환불 후 결제자 계좌 잔액이 갱신되어야 합니다.");
             assertEquals(BigDecimal.valueOf(80).subtract(refundAmount),
                     project.getCurrentFunding(),
-                    "프로젝트 currentfunding이 갱신되어야 합니다.");
-
-            // 응답 검증
-            assertEquals(newTransaction.getTransactionId(), response.getRefundTransactionId());
+                    "프로젝트 currentFunding이 환불 금액만큼 차감되어야 합니다.");
+            assertEquals(refundTransaction.getTransactionId(), response.getRefundTransactionId());
             assertEquals(originalTransactionId, response.getOriginalTransactionId());
             assertEquals(payerAccountId, response.getAccountId());
             assertEquals(beforeBalance, response.getBeforeMoney());
@@ -119,5 +106,30 @@ class AccountRefundServiceTest {
             assertEquals(payerAccount.getBalance(), response.getAfterMoney());
             assertEquals(now, response.getTransactionDate());
         }
+    }
+
+    // 테스트 데이터 생성 헬퍼 메서드
+    private Transaction createOldTransaction(int transactionId, BigDecimal amount, int fundingId) {
+        Transaction transaction = new Transaction();
+        transaction.setTransactionId(transactionId);
+        transaction.setAmount(amount);
+        Funding funding = new Funding();
+        funding.setFundingId(fundingId);
+        transaction.setFunding(funding);
+        return transaction;
+    }
+
+    private VirtualAccount createVirtualAccount(int accountId, BigDecimal balance) {
+        VirtualAccount account = new VirtualAccount();
+        account.setAccountId(accountId);
+        account.setBalance(balance);
+        return account;
+    }
+
+    private Transaction createRefundTransaction(int transactionId, LocalDateTime transactionDate) {
+        Transaction transaction = new Transaction();
+        transaction.setTransactionId(transactionId);
+        transaction.setTransactionDate(transactionDate);
+        return transaction;
     }
 }

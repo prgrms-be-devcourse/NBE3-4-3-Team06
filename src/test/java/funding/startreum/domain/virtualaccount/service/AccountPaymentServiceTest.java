@@ -9,153 +9,185 @@ import funding.startreum.domain.transaction.service.TransactionService;
 import funding.startreum.domain.virtualaccount.dto.request.AccountPaymentRequest;
 import funding.startreum.domain.virtualaccount.dto.response.AccountPaymentResponse;
 import funding.startreum.domain.virtualaccount.entity.VirtualAccount;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import static funding.startreum.domain.transaction.entity.Transaction.TransactionType.REMITTANCE;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat; // AssertJ
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class AccountPaymentServiceTest {
 
-    @MockitoBean
+    @Mock
     private TransactionService transactionService;
 
-    @MockitoBean
+    @Mock
     private ProjectService projectService;
 
-    @MockitoBean
+    @Mock
     private FundingService fundingService;
 
-    @MockitoBean
+    @Mock
     private AccountQueryService accountQueryService;
 
-    @Autowired
+    @InjectMocks
     private AccountPaymentService accountPaymentService;
+
+    // 공통으로 쓸 객체들
+    private LocalDateTime now;
+    private Transaction testTransaction;
+
+    @BeforeEach
+    void setUp() {
+        // 공통적으로 쓸 날짜나 Transaction
+        now = LocalDateTime.now();
+
+        testTransaction = new Transaction();
+        testTransaction.setTransactionId(999);
+        testTransaction.setTransactionDate(now);
+    }
+
+    private Project createProject(int projectId) {
+        Project project = new Project();
+        project.setProjectId(projectId);
+        project.setCurrentFunding(BigDecimal.ZERO);
+        return project;
+    }
+
+    private VirtualAccount createVirtualAccount(int accountId, BigDecimal balance) {
+        VirtualAccount account = new VirtualAccount();
+        account.setAccountId(accountId);
+        account.setBalance(balance);
+        return account;
+    }
 
     @Nested
     @DisplayName("paymentByAccountId() 테스트")
     class PaymentByAccountIdTests {
+
         @Test
+        @DisplayName("정상 결제 시 계좌 잔액/프로젝트 펀딩/거래내역을 확인한다.")
         void testPaymentByAccountId() {
+            // given
             int accountId = 1;
             int projectId = 100;
             String username = "payer";
             BigDecimal paymentAmount = BigDecimal.valueOf(50);
             AccountPaymentRequest request = new AccountPaymentRequest(projectId, paymentAmount);
 
-            // 프로젝트 객체 설정
-            Project project = new Project();
-            project.setProjectId(projectId);
-            project.setCurrentFunding(BigDecimal.ZERO);
+            // Project
+            Project project = createProject(projectId);
             when(projectService.getProject(projectId)).thenReturn(project);
 
-            // 결제자 계좌 설정 (충전 전 잔액 200)
-            VirtualAccount payerAccount = new VirtualAccount();
-            payerAccount.setAccountId(accountId);
-            payerAccount.setBalance(BigDecimal.valueOf(200));
+            // 결제자 계좌: 200원
+            VirtualAccount payerAccount = createVirtualAccount(accountId, BigDecimal.valueOf(200));
             when(accountQueryService.getAccount(accountId)).thenReturn(payerAccount);
 
-            // 프로젝트 수혜자 계좌 설정 (초기 잔액 100)
-            VirtualAccount projectAccount = new VirtualAccount();
-            projectAccount.setAccountId(2);
-            projectAccount.setBalance(BigDecimal.valueOf(100));
+            // 수혜자 계좌: 100원
+            VirtualAccount projectAccount = createVirtualAccount(2, BigDecimal.valueOf(100));
             when(accountQueryService.getAccountByProjectId(projectId)).thenReturn(projectAccount);
 
-            // 펀딩 생성 모의
+            // 펀딩 Mock
             Funding funding = new Funding();
             funding.setFundingId(10);
-            when(fundingService.createFunding(eq(project), eq(username), eq(paymentAmount))).thenReturn(funding);
+            when(fundingService.createFunding(eq(project), eq(username), eq(paymentAmount)))
+                    .thenReturn(funding);
 
-            // 거래 생성 모의
-            Transaction transaction = new Transaction();
-            transaction.setTransactionId(5);
-            LocalDateTime now = LocalDateTime.now();
-            transaction.setTransactionDate(now);
-            when(transactionService.createTransaction(eq(funding), eq(payerAccount), eq(projectAccount), eq(paymentAmount), eq(REMITTANCE)))
-                    .thenReturn(transaction);
+            // 거래 Mock
+            when(transactionService.createTransaction(
+                    eq(funding),
+                    eq(payerAccount),
+                    eq(projectAccount),
+                    eq(paymentAmount),
+                    eq(REMITTANCE)))
+                    .thenReturn(testTransaction);
 
+            // when
             AccountPaymentResponse response = accountPaymentService.paymentByAccountId(accountId, request, username);
 
-            // 내부 로직: payerAccount.transferTo(paymentAmount, projectAccount)
-            // 테스트를 위해 실제 transferTo가 호출되었다고 가정(예: 200-50=150)
-            assertEquals(BigDecimal.valueOf(150), payerAccount.getBalance(), "결제 후 결제자 계좌 잔액이 갱신되어야 합니다.");
-            // 프로젝트 funding은 프로젝트 객체 내부에서 currentfunding이 paymentAmount만큼 증가되어야 함
-            assertEquals(paymentAmount, project.getCurrentFunding(), "프로젝트 currentfunding이 갱신되어야 합니다.");
-
-            // 응답 검증
-            assertEquals(transaction.getTransactionId(), response.getTransactionId());
-            assertEquals(accountId, response.getAccountId());
-            assertEquals(BigDecimal.valueOf(200), response.getBeforeMoney());
-            assertEquals(paymentAmount, response.getChargeAmount());
-            assertEquals(payerAccount.getBalance(), response.getAfterMoney());
-            assertEquals(now, response.getTransactionDate());
+            // then
+            // (1) 잔액 검증
+            assertThat(payerAccount.getBalance()).as("결제자 계좌 잔액").isEqualTo(BigDecimal.valueOf(150));
+            assertThat(projectAccount.getBalance()).as("결제자 계좌 잔액").isEqualTo(BigDecimal.valueOf(150));
+            // (2) 프로젝트 currentFunding
+            assertThat(project.getCurrentFunding()).as("프로젝트 펀딩 합계").isEqualTo(paymentAmount);
+            // (3) 응답 객체 검증
+            assertThat(response.getTransactionId()).isEqualTo(testTransaction.getTransactionId());
+            assertThat(response.getAccountId()).isEqualTo(accountId);
+            assertThat(response.getBeforeMoney()).isEqualTo(BigDecimal.valueOf(200));
+            assertThat(response.getChargeAmount()).isEqualTo(paymentAmount);
+            assertThat(response.getAfterMoney()).isEqualTo(payerAccount.getBalance());
+            assertThat(response.getTransactionDate()).isEqualTo(now);
         }
     }
 
     @Nested
     @DisplayName("paymentByUsername() 테스트")
     class PaymentByUsernameTests {
+
         @Test
+        @DisplayName("정상 결제 시 계좌 잔액/프로젝트 펀딩/거래내역을 확인한다.")
         void testPaymentByUsername() {
+            // given
             int projectId = 200;
             String username = "payerUser";
             BigDecimal paymentAmount = BigDecimal.valueOf(80);
             AccountPaymentRequest request = new AccountPaymentRequest(projectId, paymentAmount);
 
-            // 프로젝트 객체 설정
-            Project project = new Project();
-            project.setProjectId(projectId);
-            project.setCurrentFunding(BigDecimal.ZERO);
+            // Project
+            Project project = createProject(projectId);
             when(projectService.getProject(projectId)).thenReturn(project);
 
-            // 결제자 계좌 설정 (충전 전 잔액 300)
-            VirtualAccount payerAccount = new VirtualAccount();
-            payerAccount.setAccountId(3);
-            payerAccount.setBalance(BigDecimal.valueOf(300));
+            // 결제자 계좌: 300원
+            VirtualAccount payerAccount = createVirtualAccount(3, BigDecimal.valueOf(300));
             when(accountQueryService.getAccount(username)).thenReturn(payerAccount);
 
-            // 프로젝트 수혜자 계좌 설정 (초기 잔액 50)
-            VirtualAccount projectAccount = new VirtualAccount();
-            projectAccount.setAccountId(4);
-            projectAccount.setBalance(BigDecimal.valueOf(50));
+            // 프로젝트 수혜자 계좌: 50원
+            VirtualAccount projectAccount = createVirtualAccount(4, BigDecimal.valueOf(50));
             when(accountQueryService.getAccountByProjectId(projectId)).thenReturn(projectAccount);
 
-            // 펀딩 생성 모의
+            // 펀딩 Mock
             Funding funding = new Funding();
             funding.setFundingId(20);
-            when(fundingService.createFunding(eq(project), eq(username), eq(paymentAmount))).thenReturn(funding);
+            when(fundingService.createFunding(eq(project), eq(username), eq(paymentAmount)))
+                    .thenReturn(funding);
 
-            // 거래 생성 모의
-            Transaction transaction = new Transaction();
-            transaction.setTransactionId(6);
-            LocalDateTime now = LocalDateTime.now();
-            transaction.setTransactionDate(now);
-            when(transactionService.createTransaction(eq(funding), eq(payerAccount), eq(projectAccount), eq(paymentAmount), eq(REMITTANCE)))
-                    .thenReturn(transaction);
+            // 거래 Mock
+            when(transactionService.createTransaction(
+                    eq(funding),
+                    eq(payerAccount),
+                    eq(projectAccount),
+                    eq(paymentAmount),
+                    eq(REMITTANCE)))
+                    .thenReturn(testTransaction);
 
+            // when
             AccountPaymentResponse response = accountPaymentService.paymentByUsername(request, username);
 
-            // 내부 로직에 따라 payerAccount.transferTo(paymentAmount, projectAccount) 실행 후: 300-80 = 220
-            assertEquals(BigDecimal.valueOf(220), payerAccount.getBalance(), "결제 후 결제자 계좌 잔액이 갱신되어야 합니다.");
-            // 프로젝트 currentfunding 업데이트 확인
-            assertEquals(paymentAmount, project.getCurrentFunding(), "프로젝트 currentfunding이 갱신되어야 합니다.");
-
-            assertEquals(transaction.getTransactionId(), response.getTransactionId());
-            assertEquals(payerAccount.getAccountId(), response.getAccountId());
-            assertEquals(BigDecimal.valueOf(300), response.getBeforeMoney());
-            assertEquals(paymentAmount, response.getChargeAmount());
-            assertEquals(payerAccount.getBalance(), response.getAfterMoney());
-            assertEquals(now, response.getTransactionDate());
+            // then
+            // (1) 잔액 검증
+            assertThat(payerAccount.getBalance()).as("결제자 계좌 잔액").isEqualTo(BigDecimal.valueOf(220));
+            assertThat(projectAccount.getBalance()).as("결제자 계좌 잔액").isEqualTo(BigDecimal.valueOf(130));
+            // (2) 프로젝트 currentFunding
+            assertThat(project.getCurrentFunding()).as("프로젝트 펀딩 합계").isEqualTo(paymentAmount);
+            // (3) 응답 객체 검증
+            assertThat(response.getTransactionId()).isEqualTo(testTransaction.getTransactionId());
+            assertThat(response.getAccountId()).isEqualTo(payerAccount.getAccountId());
+            assertThat(response.getBeforeMoney()).isEqualTo(BigDecimal.valueOf(300));
+            assertThat(response.getChargeAmount()).isEqualTo(paymentAmount);
+            assertThat(response.getAfterMoney()).isEqualTo(BigDecimal.valueOf(220));
+            assertThat(response.getTransactionDate()).isEqualTo(now);
         }
     }
 }
