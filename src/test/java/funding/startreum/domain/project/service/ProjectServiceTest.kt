@@ -54,6 +54,30 @@ class ProjectServiceTest {
     }
 
     @Test
+    fun getProjectByProjectId() {
+        // Given
+        val projectId = 1
+        val mockProject = Project().apply {
+            this.projectId = projectId
+            title = "테스트 프로젝트"
+            description = "테스트 프로젝트 설명"
+            fundingGoal = BigDecimal(1000)
+            startDate = LocalDateTime.now()
+            endDate = LocalDateTime.now().plusDays(10)
+        }
+
+        Mockito.`when`(projectRepository.findById(projectId)).thenReturn(Optional.of(mockProject))
+
+        // When
+        val project = projectService.getProject(projectId)
+
+        // Then
+        assertNotNull(project)
+        assertEquals(projectId, project.projectId)
+        assertEquals("테스트 프로젝트", project.title)
+    }
+
+    @Test
     fun createProject() {
         val requestDto = ProjectCreateRequestDto(
             "Project Title",
