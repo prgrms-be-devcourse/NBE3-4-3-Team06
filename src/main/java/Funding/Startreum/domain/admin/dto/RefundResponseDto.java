@@ -1,4 +1,4 @@
-package funding.startreum.domain.admin;
+package funding.startreum.domain.admin.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

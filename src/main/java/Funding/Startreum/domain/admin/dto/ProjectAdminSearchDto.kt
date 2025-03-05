@@ -1,4 +1,4 @@
-package funding.startreum.domain.admin
+package funding.startreum.domain.admin.dto
 
 import funding.startreum.domain.project.entity.Project
 import java.math.BigDecimal

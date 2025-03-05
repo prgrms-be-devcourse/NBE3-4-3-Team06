@@ -1,3 +1,5 @@
+package funding.startreum.domain.admin.entity
+
 import funding.startreum.domain.project.entity.Project
 import funding.startreum.domain.users.entity.User
 

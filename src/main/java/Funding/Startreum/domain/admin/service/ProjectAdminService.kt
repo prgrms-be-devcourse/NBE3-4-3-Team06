@@ -1,5 +1,10 @@
-package funding.startreum.domain.admin
+package funding.startreum.domain.admin.service
 
+import funding.startreum.domain.admin.dto.ProjectAdminUpdateDto
+import funding.startreum.domain.admin.repository.FundingFindRepository
+import funding.startreum.domain.admin.repository.ProjectAdminRepository
+import funding.startreum.domain.admin.repository.TransactionFindRepository
+import funding.startreum.domain.admin.repository.VirtualAccountFindRepository
 import funding.startreum.domain.project.entity.Project
 import funding.startreum.domain.transaction.entity.Transaction
 import funding.startreum.domain.transaction.repository.TransactionRepository
@@ -20,7 +25,7 @@ open class ProjectAdminService(
 ) {
 
     @Transactional
-    open fun updateApprovalStatus(projectId: Int, isApproved: Project.ApprovalStatus) {
+     fun updateApprovalStatus(projectId: Int, isApproved: Project.ApprovalStatus) {
         println("🟠 updateApprovalStatus() 실행됨 - projectId: $projectId, isApproved: $isApproved")
 
         val updatedRows = projectAdminRepository.updateApprovalStatus(projectId, isApproved)
@@ -42,7 +47,7 @@ open class ProjectAdminService(
     }
 
     @Transactional
-    open fun updateProjectStatus(projectId: Int, status: Project.Status) {
+     fun updateProjectStatus(projectId: Int, status: Project.Status) {
         println("🟠 updateProjectStatus() 실행됨 - projectId: $projectId, status: $status")
 
         val updatedRows = projectAdminRepository.updateProjectStatus(projectId, status)
@@ -72,7 +77,7 @@ open class ProjectAdminService(
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    open fun updateIsDeletedTransaction(projectId: Int, isDeleted: Boolean) {
+     fun updateIsDeletedTransaction(projectId: Int, isDeleted: Boolean) {
         projectAdminRepository.updateIsDeleted(projectId, isDeleted)
         entityManager.flush()
         val projectAfterUpdate = projectAdminRepository.findById(projectId)
@@ -81,14 +86,18 @@ open class ProjectAdminService(
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    open fun processRefunds(project: Project) {
-        val fundings = fundingFindRepository.findActiveFundingsByProjectId(project.projectId)
+     fun processRefunds(project: Project) {
+        val projectId = project.projectId ?: throw IllegalArgumentException("프로젝트 ID가 null입니다.") // ✅ 널 체크 후 예외 처리
+        val fundings = fundingFindRepository.findActiveFundingsByProjectId(projectId)
 
         for (funding in fundings) {
             val sponsorAccount = virtualAccountFindRepository.findByUser_UserId(funding.sponsor.userId)
                 .orElseThrow { IllegalArgumentException("❌ 후원자의 가상 계좌를 찾을 수 없습니다.") }
 
-            val originalTransaction = transactionFindRepository.findByFunding_FundingId(funding.fundingId)
+
+            val fundingId = funding.fundingId ?: throw IllegalArgumentException("펀딩 ID가 null입니다.")
+            val originalTransaction = transactionFindRepository.findByFunding_FundingId(fundingId)
+
                 .orElseThrow { IllegalArgumentException("❌ 해당 펀딩의 결제 트랜잭션을 찾을 수 없습니다.") }
 
             val beneficiaryAccount = originalTransaction.receiverAccount
@@ -122,8 +131,9 @@ open class ProjectAdminService(
         }
     }
 
+
     @Transactional
-    open fun updateProject(projectId: Int, updateDto: ProjectAdminUpdateDto) {
+     fun updateProject(projectId: Int, updateDto: ProjectAdminUpdateDto) {
         updateDto.isApproved?.let { updateApprovalStatus(projectId, it) }
         updateDto.status?.let { updateProjectStatus(projectId, it) }
     }
