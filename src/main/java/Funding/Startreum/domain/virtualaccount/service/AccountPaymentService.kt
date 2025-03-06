@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-open class AccountPaymentService(
+class AccountPaymentService(
     private val transactionService: TransactionService,
     private val projectService: ProjectService,
     private val fundingService: FundingService,
@@ -29,7 +29,7 @@ open class AccountPaymentService(
      * @return 결제자 기반 DTO
      */
     @Transactional
-    open fun paymentByAccountId(
+    fun paymentByAccountId(
         accountId: Int,
         request: AccountPaymentRequest,
         username: String
@@ -50,7 +50,7 @@ open class AccountPaymentService(
      * @return 결제자 기반 DTO
      */
     @Transactional
-    open fun paymentByUsername(
+    fun paymentByUsername(
         request: AccountPaymentRequest,
         username: String
     ): AccountPaymentResponse {

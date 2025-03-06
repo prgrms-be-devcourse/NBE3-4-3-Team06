@@ -10,7 +10,6 @@ import funding.startreum.domain.users.repository.UserRepository
 import funding.startreum.domain.virtualaccount.entity.VirtualAccount
 import funding.startreum.domain.virtualaccount.exception.AccountNotFoundException
 import funding.startreum.domain.virtualaccount.repository.VirtualAccountRepository
-import funding.startreum.domain.virtualaccount.service.AccountQueryService
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested

@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional
 
 
 @Service
-open class AccountRefundService(
+class AccountRefundService(
     private val transactionService: TransactionService,
     private val accountQueryService: AccountQueryService,
     private val fundingService: FundingService,
@@ -26,7 +26,7 @@ open class AccountRefundService(
      * @return AccountRefundResponse
      */
     @Transactional
-    open fun refund(payerAccountId: Int, transactionId: Int): AccountRefundResponse {
+    fun refund(payerAccountId: Int, transactionId: Int): AccountRefundResponse {
         // 1) 원 거래 조회
         val oldTransaction = transactionService.getTransaction(transactionId)
 

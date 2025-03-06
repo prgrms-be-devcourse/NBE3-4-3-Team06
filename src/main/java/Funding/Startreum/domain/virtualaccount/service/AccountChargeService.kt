@@ -12,7 +12,7 @@ import java.math.BigDecimal
 
 @Service
 @Transactional
-open class AccountChargeService(
+class AccountChargeService(
     private val transactionService: TransactionService,
     private val accountQueryService: AccountQueryService
 ) {

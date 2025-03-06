@@ -14,7 +14,7 @@ import java.time.LocalDateTime
 
 
 @Service
-open class AccountQueryService(
+class AccountQueryService(
     private val virtualAccountRepository: VirtualAccountRepository,
     private val userRepository: UserRepository,
 ) {
@@ -87,7 +87,7 @@ open class AccountQueryService(
      * @return 프로젝트 소유자 게좌
      */
     @Transactional(readOnly = true)
-    open fun getAccountByProjectId(projectId: Int): VirtualAccount {
+    fun getAccountByProjectId(projectId: Int): VirtualAccount {
         return virtualAccountRepository.findBeneficiaryAccountByProjectId(projectId)
             .orElseThrow { IllegalArgumentException("해당 프로젝트의 수혜자를 찾을 수 없습니다.") }
     }
@@ -99,7 +99,7 @@ open class AccountQueryService(
      * @return 프로젝트 소유자 게좌
      */
     @Transactional(readOnly = true)
-    open fun getReceiverAccountByTransactionId(transactionId: Int): VirtualAccount {
+    fun getReceiverAccountByTransactionId(transactionId: Int): VirtualAccount {
         return virtualAccountRepository.findReceiverAccountByTransactionId(transactionId)
             .orElseThrow {
                 AccountNotFoundException(
@@ -116,7 +116,7 @@ open class AccountQueryService(
      * @return 조회한 계좌의 정보 DTO를 반환합니다.
      */
     @Transactional(readOnly = true)
-    open fun getAccountInfo(accountId: Int): AccountResponse {
+    fun getAccountInfo(accountId: Int): AccountResponse {
         return mapToAccountResponse(getAccountByAccountId(accountId))
     }
 
@@ -127,7 +127,7 @@ open class AccountQueryService(
      * @return 조회한 계좌의 정보 DTO를 반환합니다.
      */
     @Transactional(readOnly = true)
-    open fun getAccountInfo(username: String): AccountResponse {
+    fun getAccountInfo(username: String): AccountResponse {
         return mapToAccountResponse(getAccountByUsername(username))
     }
 }
