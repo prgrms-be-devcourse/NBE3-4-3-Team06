@@ -66,7 +66,7 @@ internal class AccountQueryServiceTest {
             val dtos = accountQueryService.findByName(name)
 
             // Then
-            assertFalse(dtos.isAccountExists, "User가 없으면 isAccountExists는 false여야 합니다.")
+            assertFalse(dtos.accountExists, "User가 없으면 isAccountExists는 false여야 합니다.")
         }
 
         @Test
@@ -82,7 +82,7 @@ internal class AccountQueryServiceTest {
             val dtos = accountQueryService.findByName(name)
 
             // Then
-            assertFalse(dtos.isAccountExists, "계좌가 없으면 isAccountExists는 false여야 합니다.")
+            assertFalse(dtos.accountExists, "계좌가 없으면 isAccountExists는 false여야 합니다.")
         }
 
         @Test
@@ -102,7 +102,7 @@ internal class AccountQueryServiceTest {
             val dtos = accountQueryService.findByName(name)
 
             // Then
-            assertTrue(dtos.isAccountExists, "계좌가 존재하면 isAccountExists는 true여야 합니다.")
+            assertTrue(dtos.accountExists, "계좌가 존재하면 isAccountExists는 true여야 합니다.")
             assertEquals(BigDecimal.valueOf(100), dtos.balance, "계좌 잔액이 매핑되어야 합니다.")
         }
     }
@@ -159,7 +159,7 @@ internal class AccountQueryServiceTest {
             val dtos = accountQueryService.createAccount(name)
 
             // Then
-            assertTrue(dtos.isAccountExists, "계좌 생성 시 success flag는 true여야 합니다.")
+            assertTrue(dtos.accountExists, "계좌 생성 시 success flag는 true여야 합니다.")
             assertEquals(BigDecimal.ZERO, dtos.balance, "새 계좌의 초기 잔액은 0이어야 합니다.")
             verify(virtualAccountRepository, times(1)).save(any(VirtualAccount::class.java))
         }

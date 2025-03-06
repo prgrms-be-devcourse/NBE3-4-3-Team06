@@ -62,11 +62,7 @@ open class AccountQueryService(
      */
     fun getAccountByAccountId(accountId: Int): VirtualAccount {
         return virtualAccountRepository.findById(accountId)
-            .orElseThrow {
-                AccountNotFoundException(
-                    accountId
-                )
-            }
+            .orElseThrow { AccountNotFoundException(accountId) }
     }
 
     /**

@@ -98,6 +98,7 @@ public class VirtualAccountController {
      * @param request 충전할 금액 및 관련 정보를 담은 DTO.
      * @return ApiResponse 객체 안에 충전된 계좌 정보를 포함하여 반환합니다.
      */
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<?> chargeOwnAccountByUserName(
             @RequestBody @Valid AccountRequest request,
@@ -128,6 +129,7 @@ public class VirtualAccountController {
      *
      * @return ApiResponse 객체 안에 조회된 계좌 거래 내역 정보를 포함하여 반환합니다.
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping
     public ResponseEntity<?> getAccountByUserName(
             Principal principal
@@ -162,6 +164,7 @@ public class VirtualAccountController {
      * @param userDetails 현재 인증된 사용자의 세부 정보를 포함하는 객체.
      * @return ApiResponse 객체 안에 결제가 완료된 계좌 정보를 포함하여 반환합니다.
      */
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/payment")
     public ResponseEntity<?> processPaymentByUserName(
             @RequestBody @Valid AccountPaymentRequest request,
