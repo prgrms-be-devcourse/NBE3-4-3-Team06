@@ -6,6 +6,8 @@ import funding.startreum.domain.project.repository.ProjectRepository
 import funding.startreum.domain.users.entity.User
 import funding.startreum.domain.users.repository.UserRepository
 import funding.startreum.common.util.JwtUtil
+import funding.startreum.domain.reward.entity.Reward
+import funding.startreum.domain.reward.repository.RewardRepository
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.BeforeEach
@@ -27,6 +29,9 @@ class ProjectServiceTest {
     private lateinit var userRepository: UserRepository
 
     @Mock
+    private lateinit var rewardRepository: RewardRepository
+
+    @Mock
     private lateinit var jwtUtil: JwtUtil
 
     @InjectMocks
@@ -46,8 +51,8 @@ class ProjectServiceTest {
             updatedAt = LocalDateTime.now()
         }
 
-        // JWT 토큰 생성
-        JWT_TOKEN = jwtUtil.generateAccessToken(testUser.name, testUser.email, testUser.role.name)
+        // JWT 토큰 mock 설정
+        JWT_TOKEN = "mockJwtToken"
 
         // email로 사용자 조회
         Mockito.`when`(userRepository.findByEmail(Mockito.anyString())).thenReturn(Optional.of(testUser))
@@ -79,6 +84,7 @@ class ProjectServiceTest {
 
     @Test
     fun createProject() {
+        // Given: Project 생성 요청 DTO
         val requestDto = ProjectCreateRequestDto(
             "Project Title",
             "Short Description",
@@ -89,21 +95,49 @@ class ProjectServiceTest {
             LocalDateTime.now().plusDays(10)
         )
 
+        // User 정보를 mock 처리 (실제 유저 객체 생성 없이)
+        val mockUser = User().apply {
+            name = "testUser"
+            email = "test@example.com"
+            role = User.Role.BENEFICIARY
+            createdAt = LocalDateTime.now()
+            updatedAt = LocalDateTime.now()
+        }
+
+        // 유저가 이메일로 조회될 때 mockUser를 반환하도록 설정
+        Mockito.`when`(userRepository.findByEmail(Mockito.anyString())).thenReturn(Optional.of(mockUser))
+
+        // Project 객체 설정 (유저는 mock으로 처리된 mockUser를 사용)
         val project = Project().apply {
             title = "Project Title"
-            creator = testUser
+            creator = mockUser
             simpleDescription = "Short Description"
             description = "Full Description"
             fundingGoal = BigDecimal.valueOf(1000)
             bannerUrl = "bannerUrl"
             startDate = LocalDateTime.now()
             endDate = LocalDateTime.now().plusDays(10)
+            status = Project.Status.ONGOING
+            isApproved = Project.ApprovalStatus.AWAITING_APPROVAL
+            createdAt = LocalDateTime.now()
+            isDeleted = false
         }
 
+        // ProjectRepository에서 save 메서드를 mock으로 설정하여 프로젝트를 저장
         Mockito.`when`(projectRepository.save(Mockito.any(Project::class.java))).thenReturn(project)
 
-        val response = projectService.createProject(requestDto, USER_NAME)
+        // Reward 객체 설정 (리워드가 저장되는 부분도 mock으로 처리)
+        val reward = Reward(
+            project = project,
+            description = project.simpleDescription,
+            amount = BigDecimal.valueOf(10000)
+        )
+        Mockito.`when`(rewardRepository.save(Mockito.any(Reward::class.java))).thenReturn(reward)
 
+        // When: 프로젝트 생성 호출
+        val response = projectService.createProject(requestDto, "test@example.com")
+
+        // Then: 응답 검증
         assertNotNull(response)
         assertEquals("Project Title", response.title)
         assertNotNull(response.createdAt)
@@ -122,17 +156,27 @@ class ProjectServiceTest {
 
         val existingProject = Project().apply {
             this.projectId = projectId
-            creator = testUser
+            creator = testUser // creator 설정
             title = "Original Title"
+            description = "Original Description"
         }
 
+        // 프로젝트 조회 시, Optional.of(existingProject) 반환 설정
         Mockito.`when`(projectRepository.findById(projectId)).thenReturn(Optional.of(existingProject))
+
+        // 사용자가 이메일로 조회될 때 testUser를 반환하도록 설정
+        Mockito.`when`(userRepository.findByEmail(Mockito.anyString())).thenReturn(Optional.of(testUser))
+
+        // ProjectRepository에서 save 메서드를 mock으로 설정하여 프로젝트를 저장
         Mockito.`when`(projectRepository.save(Mockito.any(Project::class.java))).thenReturn(existingProject)
 
         val response = projectService.modifyProject(projectId, requestDto, JWT_TOKEN)
 
+        // Then: 수정된 프로젝트 응답 검증
         assertNotNull(response)
         assertEquals("Updated Title", response.title)
+        assertEquals("Updated Description", response.description)
+        assertEquals(BigDecimal.valueOf(2000), response.fundingGoal)
     }
 
     @Test
@@ -143,10 +187,13 @@ class ProjectServiceTest {
             creator = testUser
         }
 
+        // Mocking repository behavior
         Mockito.`when`(projectRepository.findById(projectId)).thenReturn(Optional.of(project))
 
+        // When: 프로젝트 삭제 호출
         projectService.deleteProject(projectId, JWT_TOKEN)
 
+        // Then: delete() 메서드가 호출되었는지 검증
         Mockito.verify(projectRepository).delete(project)
     }
 

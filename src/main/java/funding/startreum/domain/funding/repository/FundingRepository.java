@@ -13,7 +13,7 @@ import java.util.Optional;
 
 public interface FundingRepository extends JpaRepository<Funding, Integer> {
     @Query("""
-        SELECT f FROM funding f
+        SELECT f FROM Funding f
         JOIN FETCH f.project p
         WHERE f.sponsor.email = :email
         ORDER BY f.fundedAt DESC
