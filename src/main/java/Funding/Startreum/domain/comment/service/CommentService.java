@@ -5,14 +5,17 @@ import funding.startreum.domain.comment.dto.request.CommentRequest;
 import funding.startreum.domain.comment.dto.response.CommentResponse;
 import funding.startreum.domain.comment.entity.Comment;
 import funding.startreum.domain.comment.repository.CommentRepository;
+import funding.startreum.domain.project.entity.Project;
 import funding.startreum.domain.project.service.ProjectService;
-import funding.startreum.domain.users.repository.UserRepository;
+import funding.startreum.domain.users.entity.User;
+import funding.startreum.domain.users.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,11 +23,12 @@ import static funding.startreum.domain.comment.dto.response.CommentResponse.toRe
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class CommentService {
 
-    final private CommentRepository commentRepository;
-    final private UserRepository userRepository;
-    final private ProjectService projectService;
+    private final CommentRepository commentRepository;
+    private final UserService userService;
+    private final ProjectService projectService;
 
     @Transactional(readOnly = true)
     public Comment getComment(int commentId) {
@@ -45,32 +49,28 @@ public class CommentService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     public Comment createComment(int projectId, CommentRequest request, String username) {
         Comment comment = new Comment();
 
-     /*   funding.startreum.domain.users.entity.User user = userRepository.findByName(username)
-                .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다 : " + username));
+        User user = userService.getUserByName(username);
 
         Project project = projectService.getProject(projectId);
 
         comment.setProject(project);
         comment.setUser(user);
-        comment.setContent(request.content());
+        comment.setContent(request.getContent());
         comment.setCreatedAt(LocalDateTime.now());
         comment.setUpdatedAt(LocalDateTime.now());
-        commentRepository.save(comment);*/
+        commentRepository.save(comment);
 
         return comment;
     }
 
-    @Transactional
     public CommentResponse generateNewCommentResponse(int projectId, CommentRequest request, String username) {
         Comment comment = createComment(projectId, request, username);
         return toResponse(comment);
     }
 
-    @Transactional
     public Comment updateComment(CommentRequest request, int commentId, String username) {
         Comment comment = getComment(commentId);
 
@@ -78,18 +78,16 @@ public class CommentService {
             throw new AccessDeniedException("댓글 수정 권한이 없습니다.");
         }
 
-        comment.setContent(request.content());
+        comment.setContent(request.getContent());
 
         return comment;
     }
 
-    @Transactional
     public CommentResponse generateUpdatedCommentResponse(CommentRequest request, int commentId, String username) {
         Comment comment = updateComment(request, commentId, username);
         return toResponse(comment);
     }
 
-    @Transactional
     public void deleteComment(int commentId, String username) {
         Comment comment = getComment(commentId);
 
