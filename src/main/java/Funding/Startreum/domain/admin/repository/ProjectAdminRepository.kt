@@ -46,4 +46,11 @@ interface ProjectAdminRepository : JpaRepository<Project, Int> {
      */
     fun findByEndDateBeforeAndStatusNotIn(endDate: LocalDateTime, statuses: List<Project.Status>): List<Project>
 
+
+    /**
+     * 🔹 특정 상태(Status)에 있고, 승인된(Approve) 프로젝트 조회
+     * ✅ 자동 승인 거절을 위해 사용
+     */
+    fun findByStatusInAndIsApproved(statuses: List<Project.Status>, isApproved: ApprovalStatus): List<Project>
+
 }

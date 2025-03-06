@@ -140,7 +140,15 @@ open class ProjectAdminService(
      * - 목표 금액을 달성하면 SUCCESS
      * - 목표 금액을 달성하지 못하면 FAILED (환불 실행)
      */
-    @Scheduled(cron = "0 0 0 * * *") //
+
+    /**
+     * 🔹 테스트용 스케줄러 - 매 30초, 40초에 실행 (테스트 용도)
+     */
+    /*
+    @Scheduled(cron = "30 * * * * *") //  30초마다 실행
+    @Scheduled(cron = "40 * * * * *") //  40초마다 실행
+    */
+    @Scheduled(cron = "0 0 0 * * *") // 매일 00시 00분에 실행
     @Transactional
     fun autoUpdateProjectStatus() {
         val now = LocalDateTime.now().withNano(0) // 밀리초 제거하여 비교 정확도 높이기
@@ -179,5 +187,30 @@ open class ProjectAdminService(
     }
 
 
+    /**
+     * 🔹 매일 새벽 1시에 SUCCESS 또는 FAILED 상태인 프로젝트를 자동으로 거절
+     */
+    /*@Scheduled(cron = "0 0 1 * * *") // 매일 새벽 1시 실행*/
+    /*@Scheduled(cron = "40 * * * * *") //  40초마다 실행 */
 
-}
+    @Scheduled(cron = "0 0 1 * * *") // 매일 새벽 1시 실행
+    @Transactional
+    fun autoRejectFailedProjects() {
+        logger.info("🔎 [자동 승인 거절] SUCCESS 또는 FAILED 상태 프로젝트 조회 중...")
+
+        val rejectedProjects = projectAdminRepository.findByStatusInAndIsApproved(
+            listOf(Project.Status.SUCCESS, Project.Status.FAILED), Project.ApprovalStatus.APPROVE
+        )
+
+        logger.info("🔎 승인 거절할 프로젝트 수: {}", rejectedProjects.size)
+
+        for (project in rejectedProjects) {
+            updateApprovalStatus(project.projectId!!, Project.ApprovalStatus.REJECTED)
+            logger.info("❌ 프로젝트 승인 거절 - projectId: ${project.projectId}, title: ${project.title}")
+        }
+
+        logger.info("✅ [자동 승인 거절] 작업 완료")
+    }
+
+
+    }
