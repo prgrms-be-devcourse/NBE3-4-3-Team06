@@ -9,6 +9,8 @@ import funding.startreum.domain.transaction.entity.Transaction.TransactionType
 import funding.startreum.domain.transaction.service.TransactionService
 import funding.startreum.domain.virtualaccount.dto.request.AccountPaymentRequest
 import funding.startreum.domain.virtualaccount.entity.VirtualAccount
+import funding.startreum.domain.virtualaccount.service.AccountPaymentService
+import funding.startreum.domain.virtualaccount.service.AccountQueryService
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
