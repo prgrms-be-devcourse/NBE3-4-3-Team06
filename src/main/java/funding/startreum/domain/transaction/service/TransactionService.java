@@ -37,7 +37,7 @@ public class TransactionService {
     public Transaction createTransaction(Funding funding, VirtualAccount senderAccount, VirtualAccount receiverAccount, BigDecimal amount, Transaction.TransactionType type) {
         Transaction transaction = new Transaction();
         transaction.setFunding(funding);
-        transaction.setAdmin(userRepository.findByName("Admin").orElse(null));
+        transaction.setAdmin(userRepository.findByName("funding.startreum.domain.admin.entity.Admin").orElse(null));
         transaction.setSenderAccount(senderAccount);
         transaction.setReceiverAccount(receiverAccount);
         transaction.setAmount(amount);
