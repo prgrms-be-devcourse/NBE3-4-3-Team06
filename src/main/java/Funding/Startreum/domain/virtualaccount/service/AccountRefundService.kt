@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional
 
 
 @Service
+@Transactional
 class AccountRefundService(
     private val transactionService: TransactionService,
     private val accountQueryService: AccountQueryService,
@@ -25,7 +26,6 @@ class AccountRefundService(
      * @param transactionId  원 거래의 ID
      * @return AccountRefundResponse
      */
-    @Transactional
     fun refund(payerAccountId: Int, transactionId: Int): AccountRefundResponse {
         // 1) 원 거래 조회
         val oldTransaction = transactionService.getTransaction(transactionId)

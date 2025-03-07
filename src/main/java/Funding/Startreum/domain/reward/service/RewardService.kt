@@ -13,6 +13,7 @@ import java.time.LocalDateTime
 
 
 @Service
+@Transactional
 class RewardService(
     private val repository: RewardRepository,
     private val projectService: ProjectService
@@ -25,7 +26,6 @@ class RewardService(
      * @return 생성된 Reward 엔티티
      * @throws EntityNotFoundException 해당 ID에 해당하는 프로젝트를 찾을 수 없을 경우 발생
      */
-    @Transactional
     fun createReward(request: RewardRequest): Reward {
         // 1. 프로젝트 조회
         val project = projectService.getProject(request.projectId)
@@ -49,7 +49,6 @@ class RewardService(
      * @param request 리워드 생성에 필요한 정보를 담은 RewardRequest 객체
      * @return DTO 객체
      */
-    @Transactional
     fun generateNewRewardResponse(request: RewardRequest): RewardResponse {
         val reward = createReward(request)
         return RewardResponse.fromReward(reward) // ✅ RewardResponse 클래스에서 정의 확인 필요
@@ -100,7 +99,6 @@ class RewardService(
      * @return Reward
      * @throws EntityNotFoundException 해당 ID에 해당하는 리워드를 찾을 수 없을 경우 발생
      */
-    @Transactional
     fun updateReward(rewardId: Int, request: RewardUpdateRequest): Reward {
         val reward = getRewardByRewardId(rewardId)
 
@@ -120,7 +118,6 @@ class RewardService(
      * @param request  RewardUpdateRequest 객체
      * @return  RewardResponse 객체
      */
-    @Transactional
     fun generateUpdatedRewardResponse(rewardId: Int, request: RewardUpdateRequest): RewardResponse {
         val updatedReward = updateReward(rewardId, request)
         return RewardResponse.fromReward(updatedReward) // ✅ RewardResponse 클래스에서 fromReward 정의 확인 필요
@@ -132,7 +129,6 @@ class RewardService(
      * @param rewardId 삭제할 리워드의 ID
      * @throws EntityNotFoundException 해당 ID에 해당하는 리워드를 찾을 수 없을 경우 발생
      */
-    @Transactional
     fun deleteReward(rewardId: Int) {
         val reward = getRewardByRewardId(rewardId)
         repository.delete(reward)

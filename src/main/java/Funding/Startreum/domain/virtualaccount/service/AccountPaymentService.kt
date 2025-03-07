@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
+@Transactional
 class AccountPaymentService(
     private val transactionService: TransactionService,
     private val projectService: ProjectService,
@@ -28,7 +29,6 @@ class AccountPaymentService(
      * @param username  유저 이름
      * @return 결제자 기반 DTO
      */
-    @Transactional
     fun paymentByAccountId(
         accountId: Int,
         request: AccountPaymentRequest,
@@ -49,7 +49,6 @@ class AccountPaymentService(
      * @param username 유저 이름
      * @return 결제자 기반 DTO
      */
-    @Transactional
     fun paymentByUsername(
         request: AccountPaymentRequest,
         username: String
