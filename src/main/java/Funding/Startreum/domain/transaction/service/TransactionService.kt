@@ -48,7 +48,7 @@ class TransactionService(
     ): Transaction {
         val transaction = Transaction().apply {
             this.funding = funding
-            this.admin = userRepository.findByName("funding.startreum.domain.admin.entity.Admin").orElse(null)
+            this.admin = userRepository.findByName("Admin").orElse(null)
             this.senderAccount = from
             this.receiverAccount = to
             this.amount = amount

@@ -1,7 +1,7 @@
 package funding.startreum.domain.transaction.entity
 
-import funding.startreum.domain.users.entity.User
 import funding.startreum.domain.funding.entity.Funding
+import funding.startreum.domain.users.entity.User
 import funding.startreum.domain.virtualaccount.entity.VirtualAccount
 import jakarta.persistence.*
 import java.math.BigDecimal
@@ -19,8 +19,8 @@ class Transaction(
     var funding: Funding?, // 펀딩 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id", updatable = false)
-    var admin: User, // 관리자 ID
+    @JoinColumn(name = "admin_id", updatable = false, nullable = true)
+    var admin: User?, // 관리자 ID
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "sender_account_id", updatable = false, nullable = false)
@@ -43,7 +43,14 @@ class Transaction(
 ) {
     // 기본 생성자 추가 (JPA에서 필수)
     constructor() : this(
-        null, Funding(), User(), VirtualAccount(), VirtualAccount(), BigDecimal.ZERO, TransactionType.REMITTANCE, LocalDateTime.now()
+        null,
+        Funding(),
+        User(),
+        VirtualAccount(),
+        VirtualAccount(),
+        BigDecimal.ZERO,
+        TransactionType.REMITTANCE,
+        LocalDateTime.now()
     )
 
     enum class TransactionType {
