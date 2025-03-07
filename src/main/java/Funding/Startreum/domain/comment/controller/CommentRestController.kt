@@ -12,20 +12,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.web.bind.annotation.*
 
-/**
- * **CommentRestController 클래스**
- *
- * 댓글 관련 작업을 처리하는 REST 컨트롤러입니다.
- * 결과를 [ApiResponse] 형태로 반환합니다.
- *
- * **주요 엔드포인트**
- * - `GET /api/comment/{projectId}` - 지정된 프로젝트의 댓글 조회
- * - `POST /api/comment/{projectId}` - 지정된 프로젝트에 댓글 생성
- * - `PUT /api/comment/{commentId}` - 지정된 댓글 수정
- * - `DELETE /api/comment/{commentId}` - 지정된 댓글 삭제
- *
- * @author 한상훈
- */
 @RestController
 @RequestMapping("/api/comment")
 open class CommentRestController(
@@ -34,7 +20,7 @@ open class CommentRestController(
     private val log = LoggerFactory.getLogger(CommentRestController::class.java)
 
     /**
-     * **프로젝트의 댓글 조회**
+     * 프로젝트 댓글 조회
      *
      * @param projectId 프로젝트 ID
      * @return 댓글 목록을 포함한 응답
@@ -54,7 +40,7 @@ open class CommentRestController(
     }
 
     /**
-     * **댓글 생성**
+     * 프로젝트 댓글 생성
      *
      * @param projectId 프로젝트 ID
      * @param request 댓글 요청 데이터
@@ -78,7 +64,7 @@ open class CommentRestController(
     }
 
     /**
-     * **댓글 수정**
+     * 프로젝트의 댓을을 수정합니다.
      *
      * @param commentId 댓글 ID
      * @param request 댓글 요청 데이터
@@ -101,7 +87,7 @@ open class CommentRestController(
 
 
     /**
-     * **댓글 삭제**
+     * 프로젝트의 댓글을 삭제합니다.
      *
      * @param commentId 댓글 ID
      * @param userDetails 인증된 사용자 정보
