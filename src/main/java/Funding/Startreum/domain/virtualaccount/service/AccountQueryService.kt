@@ -34,6 +34,7 @@ class AccountQueryService(
     /**
      * 계좌 생성
      */
+    @Transactional
     fun createAccount(name: String): VirtualAccountDtos {
         val user = userRepository.findByName(name).orElseThrow {
             IllegalArgumentException(
