@@ -36,9 +36,9 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Import(SecurityConfig::class)
-@WebMvcTest(controllers = [VirtualAccountController::class])
+@WebMvcTest(controllers = [VirtualAccountRestController::class])
 @AutoConfigureMockMvc
-class VirtualAccountControllerTest {
+class VirtualAccountRestControllerTest {
 
     @Autowired
     lateinit var mockMvc: MockMvc

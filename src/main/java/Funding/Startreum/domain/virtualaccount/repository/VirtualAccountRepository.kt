@@ -22,13 +22,6 @@ interface VirtualAccountRepository : JpaRepository<VirtualAccount, Int> {
 
     @Query(
         "SELECT va FROM VirtualAccount va " +
-                "JOIN va.user u " +
-                "WHERE u.name = :username"
-    )
-    fun findBeneficiaryAccountByUser_Name(@Param("username") username: String): Optional<VirtualAccount>
-
-    @Query(
-        "SELECT va FROM VirtualAccount va " +
                 "JOIN Transaction t ON t.receiverAccount = va " +
                 "WHERE t.transactionId = :transactionId"
     )

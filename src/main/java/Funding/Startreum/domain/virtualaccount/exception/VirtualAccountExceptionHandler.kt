@@ -3,7 +3,7 @@ package funding.startreum.domain.virtualaccount.exception
 import funding.startreum.common.util.ApiResponse
 import funding.startreum.domain.funding.exception.FundingNotFoundException
 import funding.startreum.domain.transaction.transaction.TransactionNotFoundException
-import funding.startreum.domain.virtualaccount.controller.VirtualAccountController
+import funding.startreum.domain.virtualaccount.controller.VirtualAccountRestController
 import jakarta.persistence.EntityNotFoundException
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestControllerAdvice
 
-@RestControllerAdvice(assignableTypes = [VirtualAccountController::class])
+@RestControllerAdvice(assignableTypes = [VirtualAccountRestController::class])
 class VirtualAccountExceptionHandler {
 
     @ExceptionHandler(
@@ -23,7 +23,7 @@ class VirtualAccountExceptionHandler {
     )
     fun handleException(e: RuntimeException): ResponseEntity<ApiResponse<Void>> {
         val status = STATUS_MAP.getOrDefault(e.javaClass, HttpStatus.INTERNAL_SERVER_ERROR)
-        return ResponseEntity.status(status).body(ApiResponse.error(e.message))
+        return ResponseEntity.status(status).body(ApiResponse.error(e.message!!))
     }
 
     @ExceptionHandler(DataIntegrityViolationException::class)

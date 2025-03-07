@@ -14,6 +14,6 @@ class RewardExceptionHandler {
     @ExceptionHandler(EntityNotFoundException::class)
     fun handleException(e: EntityNotFoundException): ResponseEntity<ApiResponse<Void>> {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-            .body(ApiResponse.error(e.message))
+            .body(ApiResponse.error(e.message!!))
     }
 }

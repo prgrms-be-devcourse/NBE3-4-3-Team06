@@ -14,6 +14,6 @@ class CommentExceptionHandler {
     fun handleEntityNotFoundException(e: EntityNotFoundException): ResponseEntity<ApiResponse<Void>> {
         return ResponseEntity
             .status(HttpStatus.NOT_FOUND)
-            .body(ApiResponse.error(e.message))
+            .body(ApiResponse.error(e.message!!))
     }
 }

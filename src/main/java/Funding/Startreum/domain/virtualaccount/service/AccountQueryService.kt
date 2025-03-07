@@ -74,11 +74,7 @@ class AccountQueryService(
      */
     fun getAccountByUsername(username: String): VirtualAccount {
         return virtualAccountRepository.findByUser_Name(username)
-            .orElseThrow {
-                AccountNotFoundException(
-                    username
-                )
-            }
+            .orElseThrow { AccountNotFoundException(username) }
     }
 
     /**

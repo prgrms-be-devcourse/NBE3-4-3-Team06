@@ -41,7 +41,7 @@ class VirtualAccount(
      * @throws NotEnoughBalanceException 잔액이 부족할 경우 예외 발생
      */
     fun transferTo(amount: BigDecimal, to: VirtualAccount) {
-        if (this.balance.compareTo(amount) < 0) throw NotEnoughBalanceException(this.balance)
+        if (this.balance < amount) throw NotEnoughBalanceException(this.balance)
         // 대상 계좌에 입금
         this.balance = balance.subtract(amount)
         to.balance = to.balance.add(amount)

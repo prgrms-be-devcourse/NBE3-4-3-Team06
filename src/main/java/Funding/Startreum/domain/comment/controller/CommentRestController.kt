@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/comment")
-open class CommentRestController(
+class CommentRestController(
     private val commentService: CommentService
 ) {
     private val log = LoggerFactory.getLogger(CommentRestController::class.java)

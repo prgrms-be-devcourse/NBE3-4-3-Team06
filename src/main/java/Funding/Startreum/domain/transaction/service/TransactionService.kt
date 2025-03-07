@@ -13,7 +13,7 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Service
-open class TransactionService(
+class TransactionService(
     private val transactionRepository: TransactionRepository,
     private val userRepository: UserRepository,
 ) {
@@ -24,7 +24,7 @@ open class TransactionService(
      * @return Transaction 객체
      */
     @Transactional(readOnly = true)
-    open fun getTransaction(transactionId: Int): Transaction =
+    fun getTransaction(transactionId: Int): Transaction =
         transactionRepository.findById(transactionId)
             .orElseThrow { TransactionNotFoundException(transactionId) }!!
 
@@ -39,7 +39,7 @@ open class TransactionService(
      * @return 생성된 Transaction 객체
      */
     @Transactional
-    open fun createTransaction(
+    fun createTransaction(
         funding: Funding?,
         from: VirtualAccount,
         to: VirtualAccount,

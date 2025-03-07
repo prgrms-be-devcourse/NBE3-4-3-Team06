@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/reward")
-public open class RewardRestController( // ✅ open 추가하여 프록시 생성 가능하도록 설정
+class RewardRestController( // ✅ open 추가하여 프록시 생성 가능하도록 설정
     private val service: RewardService
 ) {
 
