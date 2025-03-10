@@ -12,8 +12,6 @@ import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Service
-
-// TODO 단위 테스트
 class FundingService(
     private val fundingRepository: FundingRepository,
     private val userService: UserService,
@@ -28,13 +26,13 @@ class FundingService(
      * @return 정보가 담긴 Funding 객체
      */
     fun createFunding(currentProject: Project, username: String, paymentAmount: BigDecimal): Funding {
-        val spon: User = userService.getUserByName(username)
+        val sponsor: User = userService.getUserByName(username)
 
         val funding = Funding().apply {
-            project = currentProject
-            amount = paymentAmount
-            fundedAt = LocalDateTime.now()
-            sponsor = spon
+            this.project = currentProject
+            this.amount = paymentAmount
+            this.fundedAt = LocalDateTime.now()
+            this.sponsor = sponsor
         }
 
         // 리워드 할당: 결제 금액이 리워드 기준 이하인 경우,

@@ -8,6 +8,7 @@ import funding.startreum.domain.virtualaccount.entity.VirtualAccount
 import funding.startreum.domain.virtualaccount.service.AccountChargeService
 import funding.startreum.domain.virtualaccount.service.AccountQueryService
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -88,6 +89,20 @@ internal class AccountChargeServiceTest {
             assertThat(response.afterMoney).isEqualTo(testAccount.balance)
             assertThat(response.transactionDate).isEqualTo(now)
         }
+
+        @Test
+        @DisplayName("0원 이하로 충전 시 -> IllegalArgumentException 발생")
+        fun charageZeroAmountByAccountIdTest() {
+            // Given
+            val accountId = 999
+            val request = AccountRequest(amount = BigDecimal.ZERO)
+
+            // When & Then
+            assertThrows(IllegalArgumentException::class.java) {
+                accountChargeService.chargeByAccountId(accountId, request)
+            }
+        }
+
     }
 
     @Nested
@@ -129,6 +144,19 @@ internal class AccountChargeServiceTest {
             assertThat(response.chargeAmount).isEqualTo(chargeAmount)
             assertThat(response.afterMoney).isEqualTo(testAccount.balance)
             assertThat(response.transactionDate).isEqualTo(now)
+        }
+
+        @Test
+        @DisplayName("0원 이하로 충전 시 -> IllegalArgumentException 발생")
+        fun charageZeroAmountByUsernameTest() {
+            // Given
+            val accountId = 999
+            val request = AccountRequest(amount = BigDecimal.ZERO)
+
+            // When & Then
+            assertThrows(IllegalArgumentException::class.java) {
+                accountChargeService.chargeByAccountId(accountId, request)
+            }
         }
     }
 }

@@ -64,7 +64,7 @@ class VirtualAccountRestControllerTest {
     @MockitoBean(name = "accountSecurity")
     lateinit var accountSecurity: AccountSecurity
 
-    private val BASE_URL = "/api/account"
+    private val url = "/api/account"
 
     @Nested
     @DisplayName("#1 계좌 조회 API (/user/{name})")
@@ -79,7 +79,7 @@ class VirtualAccountRestControllerTest {
             given(accountQueryService.findByName(targetUser)).willReturn(mockAccount)
 
             mockMvc.perform(
-                get("$BASE_URL/user/{name}", targetUser)
+                get("$url/user/{name}", targetUser)
                     .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isOk)
@@ -90,7 +90,7 @@ class VirtualAccountRestControllerTest {
         @DisplayName("1-2) Principal 이 null 인 경우 => 401 Unauthorized")
         fun getAccount_Unauthorized() {
             mockMvc.perform(
-                get("$BASE_URL/user/{name}", "tester")
+                get("$url/user/{name}", "tester")
                     .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isForbidden)
@@ -101,7 +101,7 @@ class VirtualAccountRestControllerTest {
         @WithMockUser(username = "anotherUser")
         fun getAccount_Forbidden() {
             mockMvc.perform(
-                get("$BASE_URL/user/{name}", "tester")
+                get("$url/user/{name}", "tester")
                     .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isForbidden)
@@ -121,7 +121,7 @@ class VirtualAccountRestControllerTest {
             given(accountQueryService.createAccount(targetUser)).willReturn(newAccountDto)
 
             mockMvc.perform(
-                post("$BASE_URL/user/{name}/create", targetUser)
+                post("$url/user/{name}/create", targetUser)
                     .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isOk)
@@ -133,7 +133,7 @@ class VirtualAccountRestControllerTest {
         @WithMockUser(username = "notOwner")
         fun createAccount_Forbidden() {
             mockMvc.perform(
-                post("$BASE_URL/user/{name}/create", "tester")
+                post("$url/user/{name}/create", "tester")
                     .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isForbidden)
@@ -147,7 +147,7 @@ class VirtualAccountRestControllerTest {
                 .willThrow(IllegalStateException("이미 존재하는 계좌입니다."))
 
             mockMvc.perform(
-                post("$BASE_URL/user/{name}/create", "tester")
+                post("$url/user/{name}/create", "tester")
                     .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isBadRequest)
@@ -176,7 +176,7 @@ class VirtualAccountRestControllerTest {
             val requestJson = objectMapper.writeValueAsString(requestBody)
 
             mockMvc.perform(
-                post("$BASE_URL/$accountId")
+                post("$url/$accountId")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(requestJson)
             )
@@ -193,7 +193,7 @@ class VirtualAccountRestControllerTest {
             val requestJson = objectMapper.writeValueAsString(requestBody)
 
             mockMvc.perform(
-                post("$BASE_URL/$accountId")
+                post("$url/$accountId")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(requestJson)
             )
@@ -219,7 +219,7 @@ class VirtualAccountRestControllerTest {
             given(accountChargeService.chargeByUsername("tester", request)).willReturn(mockResponse)
 
             mockMvc.perform(
-                post(BASE_URL)
+                post(url)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(request))
             )
@@ -231,7 +231,7 @@ class VirtualAccountRestControllerTest {
     }
 
     @Nested
-    @DisplayName("#5 계좌 조회 API => GET /{accountId}")
+    @DisplayName("#5 계좌 조회 API (accountId 기반) => GET /{accountId}")
     inner class GetAccountByIdTest {
 
         @Test
@@ -243,7 +243,7 @@ class VirtualAccountRestControllerTest {
             given(accountQueryService.getAccountInfo(accountId)).willReturn(mockResponse)
 
             mockMvc.perform(
-                get("$BASE_URL/$accountId")
+                get("$url/$accountId")
                     .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isOk)
@@ -256,7 +256,7 @@ class VirtualAccountRestControllerTest {
         @WithMockUser(username = "notOwner", roles = ["SPONSOR"])
         fun getAccount_NotOwner() {
             mockMvc.perform(
-                get("$BASE_URL/999")
+                get("$url/999")
                     .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isForbidden)
@@ -264,11 +264,34 @@ class VirtualAccountRestControllerTest {
     }
 
     @Nested
-    @DisplayName("#6 계좌 결제 API (accountId 기반) => POST /{accountId}/payment")
+    @DisplayName("#6 계좌 조회 API (username 기반) => GET /")
+    inner class GetAccountByUsernameTest {
+
+        @Test
+        @DisplayName("6-1) 로그인 사용자 == OWNER, 200 OK")
+        @WithMockUser(username = "owner", roles = ["SPONSOR"])
+        fun getAccount_Owner() {
+            val accountId = 111
+            val mockResponse = AccountResponse(accountId, BigDecimal.valueOf(2000), LocalDateTime.now())
+            given(accountQueryService.getAccountInfo("owner")).willReturn(mockResponse)
+
+            mockMvc.perform(
+                get("$url")
+                    .contentType(MediaType.APPLICATION_JSON)
+            )
+                .andExpect(status().isOk)
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.data.accountId").value(accountId))
+        }
+
+    }
+
+    @Nested
+    @DisplayName("#7 계좌 결제 API (accountId 기반) => POST /{accountId}/payment")
     inner class PaymentByAccountIdTest {
 
         @Test
-        @DisplayName("6-1) ADMIN 또는 OWNER 권한이 있으면 결제 성공 200")
+        @DisplayName("7-1) ADMIN 또는 OWNER 권한이 있으면 결제 성공 200")
         @WithMockUser(username = "tester", roles = ["ADMIN"])
         fun payment_Success() {
             val accountId = 123
@@ -283,7 +306,7 @@ class VirtualAccountRestControllerTest {
                 .willReturn(mockResponse)
 
             mockMvc.perform(
-                post("$BASE_URL/$accountId/payment")
+                post("$url/$accountId/payment")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(requestBody))
             )
@@ -293,14 +316,14 @@ class VirtualAccountRestControllerTest {
         }
 
         @Test
-        @DisplayName("6-2) 권한 없는 사용자 => 403 Forbidden")
+        @DisplayName("7-2) 권한 없는 사용자 => 403 Forbidden")
         @WithMockUser(username = "tester")
         fun payment_Forbidden() {
             val accountId = 123
             val requestBody = AccountPaymentRequest(1, BigDecimal.valueOf(500))
 
             mockMvc.perform(
-                post("$BASE_URL/$accountId/payment")
+                post("$url/$accountId/payment")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(requestBody))
             )
@@ -309,11 +332,11 @@ class VirtualAccountRestControllerTest {
     }
 
     @Nested
-    @DisplayName("#7 계좌 결제 API (username 기반) => POST /api/account/payment")
+    @DisplayName("#8 계좌 결제 API (username 기반) => POST /api/account/payment")
     inner class PaymentByUsernameTest {
 
         @Test
-        @DisplayName("7-1) 로그인 사용자 == OWNER, 결제 성공 200")
+        @DisplayName("8-1) 로그인 사용자 == OWNER, 결제 성공 200")
         @WithMockUser(username = "tester", roles = ["SPONSOR"])
         fun payment_Success() {
             val paymentAmount = BigDecimal.valueOf(1000)
@@ -327,7 +350,7 @@ class VirtualAccountRestControllerTest {
                 .willReturn(mockResponse)
 
             mockMvc.perform(
-                post("$BASE_URL/payment")
+                post("$url/payment")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(requestBody))
             )
@@ -338,11 +361,11 @@ class VirtualAccountRestControllerTest {
     }
 
     @Nested
-    @DisplayName("#8 계좌 환불 API => POST /{accountId}/transactions/{transactionId}/refund")
+    @DisplayName("#9 계좌 환불 API => POST /{accountId}/transactions/{transactionId}/refund")
     inner class RefundTest {
 
         @Test
-        @DisplayName("8-1) ADMIN 또는 OWNER 권한이 있으면 환불 성공 200")
+        @DisplayName("9-1) ADMIN 또는 OWNER 권한이 있으면 환불 성공 200")
         @WithMockUser(username = "tester", roles = ["ADMIN"])
         fun refund_Success() {
             val accountId = 123
@@ -355,7 +378,7 @@ class VirtualAccountRestControllerTest {
                 .willReturn(mockResponse)
 
             mockMvc.perform(
-                post("$BASE_URL/$accountId/transactions/$transactionId/refund")
+                post("$url/$accountId/transactions/$transactionId/refund")
                     .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isOk)
@@ -364,11 +387,11 @@ class VirtualAccountRestControllerTest {
         }
 
         @Test
-        @DisplayName("8-2) 권한 없는 사용자 => 403 Forbidden")
+        @DisplayName("9-2) 권한 없는 사용자 => 403 Forbidden")
         @WithMockUser(username = "tester", roles = ["SPONSOR"])
         fun refund_Forbidden() {
             mockMvc.perform(
-                post("$BASE_URL/999/transactions/111/refund")
+                post("$url/999/transactions/111/refund")
                     .contentType(MediaType.APPLICATION_JSON)
             )
                 .andExpect(status().isForbidden)
