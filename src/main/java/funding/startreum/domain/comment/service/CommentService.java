@@ -5,6 +5,7 @@ import funding.startreum.domain.comment.dto.request.CommentRequest;
 import funding.startreum.domain.comment.dto.response.CommentResponse;
 import funding.startreum.domain.comment.entity.Comment;
 import funding.startreum.domain.comment.repository.CommentRepository;
+import funding.startreum.domain.project.entity.Project;
 import funding.startreum.domain.project.service.ProjectService;
 import funding.startreum.domain.users.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -13,6 +14,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,7 +51,7 @@ public class CommentService {
     public Comment createComment(int projectId, CommentRequest request, String username) {
         Comment comment = new Comment();
 
-     /*   funding.startreum.domain.users.entity.User user = userRepository.findByName(username)
+        funding.startreum.domain.users.entity.User user = userRepository.findByName(username)
                 .orElseThrow(() -> new EntityNotFoundException("유저를 찾을 수 없습니다 : " + username));
 
         Project project = projectService.getProject(projectId);
@@ -59,7 +61,7 @@ public class CommentService {
         comment.setContent(request.content());
         comment.setCreatedAt(LocalDateTime.now());
         comment.setUpdatedAt(LocalDateTime.now());
-        commentRepository.save(comment);*/
+        commentRepository.save(comment);
 
         return comment;
     }
