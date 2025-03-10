@@ -70,4 +70,8 @@ class Project(
         LocalDateTime.now(), LocalDateTime.now(), Status.ONGOING, ApprovalStatus.AWAITING_APPROVAL,
         false, LocalDateTime.now(), LocalDateTime.now()
     )
+
+    fun setIsApproved(approvalStatus: ApprovalStatus) {
+        this.isApproved = approvalStatus
+    }
 }
