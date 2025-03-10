@@ -228,15 +228,30 @@ class ProjectServiceTest {
     @Test
     fun requestApprove() {
         val projectId = 1
-        val project = Project().apply {
-            this.projectId = projectId
-            creator = testUser
-            isApproved = Project.ApprovalStatus.AWAITING_APPROVAL
+
+        val mockUser = User().apply {
+            name = "testUser"
+            email = "test@example.com"
+            role = User.Role.BENEFICIARY
+            createdAt = LocalDateTime.now()
+            updatedAt = LocalDateTime.now()
         }
 
-        Mockito.`when`(projectRepository.findById(projectId)).thenReturn(Optional.of(project))
+        val mockProject = Project().apply {
+            this.projectId = projectId
+            creator = mockUser
+        }
 
-        val response = projectService.requestApprove(projectId, JWT_TOKEN)
+
+        Mockito.`when`(projectRepository.findById(projectId)).thenReturn(Optional.of(mockProject))
+
+        // JWT 토큰에서 이메일을 반환하도록 Mock 설정
+        Mockito.`when`(jwtUtil.getEmailFromToken(Mockito.anyString())).thenReturn("test@example.com")
+
+        // 유저 조회 Mock 설정
+        Mockito.`when`(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser))
+
+        val response = projectService.requestApprove(projectId, "Bearer mockToken")
 
         assertNotNull(response)
         assertEquals("AWAITING_APPROVAL", response.status)
