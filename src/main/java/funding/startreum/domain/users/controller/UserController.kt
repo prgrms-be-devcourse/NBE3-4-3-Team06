@@ -163,7 +163,7 @@ import java.util.*
     }
 
     // ✅ 로그인한 사용자의 후원 내역 조회
-    @GetMapping("/open fun dings/{username}")
+    @GetMapping("/fundings/{username}")
     @PreAuthorize("isAuthenticated()")
      fun  getFundingsByUsername(@PathVariable username: String): ResponseEntity<Any> {
         val user = userService.getUserByName(username)
