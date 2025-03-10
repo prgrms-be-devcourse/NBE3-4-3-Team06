@@ -170,12 +170,19 @@ class ProjectServiceTest {
             description = "Original Description"
         }
 
-        // 실제로 사용하는 mock만 설정
+        // JWT 토큰에서 이메일을 반환하도록 Mock 설정
+        Mockito.`when`(jwtUtil.getEmailFromToken(Mockito.anyString())).thenReturn("test@example.com")
+
+        // 유저 조회 Mock 설정
+        Mockito.`when`(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser))
+
+        // 프로젝트 조회 Mock 설정
         Mockito.`when`(projectRepository.findById(projectId)).thenReturn(Optional.of(existingProject))
-        Mockito.`when`(projectRepository.save(Mockito.any(Project::class.java))).thenReturn(existingProject)
 
-        val response = projectService.modifyProject(projectId, requestDto, "mockToken")
+        // When: 프로젝트 수정 호출
+        val response = projectService.modifyProject(projectId, requestDto, "Bearer mockToken") // ✅ Bearer 추가
 
+        // Then: 응답 검증
         assertNotNull(response)
         assertEquals("Updated Title", response.title)
         assertEquals("Updated Description", response.description)
@@ -183,31 +190,39 @@ class ProjectServiceTest {
     }
 
 
-
-
     @Test
     fun deleteProject() {
         val projectId = 1
-        val project = Project().apply {
-            this.projectId = projectId
-            creator = testUser
+
+        val mockUser = User().apply {
+            name = "testUser"
+            email = "test@example.com"
+            role = User.Role.BENEFICIARY
+            createdAt = LocalDateTime.now()
+            updatedAt = LocalDateTime.now()
         }
 
-        // JWT 토큰을 Bearer 형식으로 설정
-        val token = "Bearer mockJwtToken"
+        val mockProject = Project().apply {
+            this.projectId = projectId
+            creator = mockUser
+        }
 
-        // `jwtUtil.getEmailFromToken` 메서드를 mock 처리하여 이메일을 반환하도록 설정
+        // JWT 토큰에서 이메일을 반환하도록 Mock 설정
         Mockito.`when`(jwtUtil.getEmailFromToken(Mockito.anyString())).thenReturn("test@example.com")
 
-        // 프로젝트 조회 Mock 설정
-        Mockito.`when`(projectRepository.findById(projectId)).thenReturn(Optional.of(project))
+        // 유저 조회 Mock 설정
+        Mockito.`when`(userRepository.findByEmail("test@example.com")).thenReturn(Optional.of(mockUser))
+
+        // ✅ 프로젝트 조회 Mock 설정 추가 (프로젝트가 존재하도록 설정)
+        Mockito.`when`(projectRepository.findById(projectId)).thenReturn(Optional.of(mockProject))
 
         // When: 프로젝트 삭제 호출
-        projectService.deleteProject(projectId, token)
+        projectService.deleteProject(projectId, "Bearer mockToken")
 
-        // Then: delete() 메서드가 호출되었는지 검증
-        Mockito.verify(projectRepository, Mockito.times(1)).delete(project)
+        // Then: delete() 메서드가 한 번 호출되었는지 검증
+        Mockito.verify(projectRepository, Mockito.times(1)).delete(mockProject)
     }
+
 
 
     @Test
