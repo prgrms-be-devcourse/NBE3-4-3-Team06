@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
-// TODO 단위 테스트
 @Service
 class TransactionService(
     private val transactionRepository: TransactionRepository,

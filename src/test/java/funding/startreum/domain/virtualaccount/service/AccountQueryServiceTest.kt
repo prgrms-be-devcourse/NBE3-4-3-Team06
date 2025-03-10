@@ -205,8 +205,37 @@ internal class AccountQueryServiceTest {
     }
 
     @Nested
-    @DisplayName("getAccount() 예외 처리 테스트")
+    @DisplayName("getAccount() 관련 테스트")
     inner class GetAccountExceptionTests {
+
+        @Test
+        @DisplayName("(accountId 기반) => 계좌를 올바르게 조회")
+        fun getAccountSuccessTest1() {
+            val user = createUser(1)
+            val accountId = 999
+            val virtualAccount = createVirtualAccount(accountId, user, BigDecimal.valueOf(1000))
+            `when`(virtualAccountRepository.findById(accountId)).thenReturn(Optional.of(virtualAccount))
+
+            // When
+            val foundAccount = accountQueryService.getAccountByAccountId(accountId)
+
+            // Then
+            assertNotNull(foundAccount)
+            assertEquals(accountId, foundAccount.accountId)
+        }
+
+        @Test
+        @DisplayName("(username 기반) => 계좌를 올바르게 조회")
+        fun getAccountSuccessTest2() {
+            val user = createUser(1)
+            val accountId = 999
+            val virtualAccount = createVirtualAccount(accountId, user, BigDecimal.valueOf(1000))
+            `when`(virtualAccountRepository.findByUser_Name(user.name)).thenReturn(Optional.of(virtualAccount))
+
+            val foundAccount = accountQueryService.getAccountByUsername(user.name)
+            assertNotNull(foundAccount)
+            assertEquals(accountId, foundAccount.accountId)
+        }
 
         @Test
         @DisplayName("계좌 ID로 계좌를 찾을 수 없는 경우")
@@ -235,9 +264,103 @@ internal class AccountQueryServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("getAccountByProjectId() 관련 테스트")
+    inner class GetAccountByProjectIdTests {
+
+        @Test
+        @DisplayName("정상적으로 계좌를 조회할 경우 => VirtualAccount 반환")
+        fun whenProjectIdExists_thenReturnVirtualAccount() {
+            // Given
+            val projectId = 123
+            val mockAccount = VirtualAccount(
+                accountId = 999,
+                user = User(), // 테스트에 맞게 설정
+                balance = BigDecimal.valueOf(1000)
+            )
+            `when`(virtualAccountRepository.findBeneficiaryAccountByProjectId(projectId))
+                .thenReturn(Optional.of(mockAccount))
+
+            // When
+            val result = accountQueryService.getAccountByProjectId(projectId)
+
+            // Then
+            assertNotNull(result)
+            assertEquals(mockAccount.accountId, result.accountId)
+            assertEquals(mockAccount.balance, result.balance)
+            verify(virtualAccountRepository).findBeneficiaryAccountByProjectId(projectId)
+        }
+
+        @Test
+        @DisplayName("계좌가 존재하지 않을 경우 => IllegalArgumentException 발생")
+        fun whenProjectIdNotExists_thenThrowIllegalArgumentException() {
+            // Given
+            val projectId = 999
+            `when`(virtualAccountRepository.findBeneficiaryAccountByProjectId(projectId))
+                .thenReturn(Optional.empty())
+
+            // When & Then
+            assertThrows(IllegalArgumentException::class.java) {
+                accountQueryService.getAccountByProjectId(projectId)
+            }
+            verify(virtualAccountRepository).findBeneficiaryAccountByProjectId(projectId)
+        }
+    }
+
+    @Nested
+    @DisplayName("getReceiverAccountByTransactionId() 관련 테스트")
+    inner class GetReceiverAccountByTransactionIdTests {
+
+        @Test
+        @DisplayName("정상적으로 계좌를 조회할 경우 => VirtualAccount 반환")
+        fun whenTransactionIdExists_thenReturnVirtualAccount() {
+            // Given
+            val transactionId = 456
+            val mockAccount = VirtualAccount(
+                accountId = 1001,
+                user = User(), // 테스트에 맞게 설정
+                balance = BigDecimal.valueOf(5000)
+            )
+            `when`(virtualAccountRepository.findReceiverAccountByTransactionId(transactionId))
+                .thenReturn(Optional.of(mockAccount))
+
+            // When
+            val result = accountQueryService.getReceiverAccountByTransactionId(transactionId)
+
+            // Then
+            assertNotNull(result)
+            assertEquals(mockAccount.accountId, result.accountId)
+            assertEquals(mockAccount.balance, result.balance)
+            verify(virtualAccountRepository).findReceiverAccountByTransactionId(transactionId)
+        }
+
+        @Test
+        @DisplayName("계좌를 찾지 못할 경우 => AccountNotFoundException 발생")
+        fun whenTransactionIdNotExists_thenThrowAccountNotFoundException() {
+            // Given
+            val transactionId = 999
+            `when`(virtualAccountRepository.findReceiverAccountByTransactionId(transactionId))
+                .thenReturn(Optional.empty())
+
+            // When & Then
+            assertThrows(AccountNotFoundException::class.java) {
+                accountQueryService.getReceiverAccountByTransactionId(transactionId)
+            }
+            verify(virtualAccountRepository).findReceiverAccountByTransactionId(transactionId)
+        }
+    }
+
+
     // 헬퍼 메서드들
     private fun createUser(userId: Int): User =
         User().apply { this.userId = userId }
+
+    private fun createVirtualAccount(accountId: Int, user: User, balance: BigDecimal): VirtualAccount =
+        VirtualAccount().apply {
+            this.accountId = accountId
+            this.user = user
+            this.balance = balance
+        }
 
     private fun createVirtualAccount(user: User, balance: BigDecimal): VirtualAccount =
         VirtualAccount().apply {
