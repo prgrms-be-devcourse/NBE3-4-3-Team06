@@ -15,10 +15,10 @@ public class ProjectDetailService {
     }
 
     @Transactional(readOnly = true)
-    public ProjectDetailDto getProjectDetail(Integer projectId) {
+    public funding.startreum.domain.project.ProjectDetailDto getProjectDetail(Integer projectId) {
         Project project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 프로젝트를 찾을 수 없습니다. ID: " + projectId));
 
-        return ProjectDetailDto.from(project);
+        return funding.startreum.domain.project.ProjectDetailDto.from(project);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDateTime
 
 interface ProjectAdminRepository : JpaRepository<Project, Int> {
 
@@ -39,4 +40,17 @@ interface ProjectAdminRepository : JpaRepository<Project, Int> {
      * 🔹 승인 상태(isApproved)로 프로젝트 목록 조회 (관리자용)
      */
     fun findByIsApproved(approvalStatus: ApprovalStatus): List<Project>
+
+    /**
+     * 🔹 종료된데도 아직 성공 또는 실패 처리가 되지 않은 프로젝트 조회
+     */
+    fun findByEndDateBeforeAndStatusNotIn(endDate: LocalDateTime, statuses: List<Project.Status>): List<Project>
+
+
+    /**
+     * 🔹 특정 상태(Status)에 있고, 승인된(Approve) 프로젝트 조회
+     * ✅ 자동 승인 거절을 위해 사용
+     */
+    fun findByStatusInAndIsApproved(statuses: List<Project.Status>, isApproved: ApprovalStatus): List<Project>
+
 }

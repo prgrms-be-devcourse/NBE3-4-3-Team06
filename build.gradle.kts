@@ -58,6 +58,7 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-api:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.5")
 	runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.5")
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
 
 	// 테스트 관련
 	testImplementation("org.springframework.boot:spring-boot-starter-test")

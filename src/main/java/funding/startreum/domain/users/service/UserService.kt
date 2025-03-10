@@ -68,9 +68,7 @@ import java.time.LocalDateTime
      * 이름(ID) 중복 확인
      */
     fun isNameDuplicate(name: String): Boolean {
-        println("🔍 Checking name duplication for: $name")
         val result = userRepository.existsByName(name)
-        println("✅ Result: $result")
         return result
     }
 
@@ -79,9 +77,7 @@ import java.time.LocalDateTime
      * 이메일 중복 확인
      */
     fun isEmailDuplicate(email: String): Boolean {
-        println("🔍 Checking email duplication for: $email")
         val result = userRepository.existsByEmail(email)
-        println("✅ Result: $result")
         return result
     }
 
