@@ -63,14 +63,32 @@ class ProjectServiceTest {
     fun getProjectByProjectId() {
         // Given
         val projectId = 1
+
+        val mockUser = User().apply {
+            name = "testUser"
+            email = "test@example.com"
+            role = User.Role.BENEFICIARY
+            createdAt = LocalDateTime.now()
+            updatedAt = LocalDateTime.now()
+        }
+
+        // Project 객체 설정 (유저는 mock으로 처리된 mockUser를 사용)
         val mockProject = Project().apply {
-            this.projectId = projectId
             title = "테스트 프로젝트"
-            description = "테스트 프로젝트 설명"
-            fundingGoal = BigDecimal(1000)
+            creator = mockUser
+            simpleDescription = "Short Description"
+            description = "Full Description"
+            fundingGoal = BigDecimal.valueOf(1000)
+            bannerUrl = "bannerUrl"
             startDate = LocalDateTime.now()
             endDate = LocalDateTime.now().plusDays(10)
+            status = Project.Status.ONGOING
+            isApproved = Project.ApprovalStatus.AWAITING_APPROVAL
+            createdAt = LocalDateTime.now()
+            isDeleted = false
         }
+
+        mockProject.projectId = projectId
 
         Mockito.`when`(projectRepository.findById(projectId)).thenReturn(Optional.of(mockProject))
 
