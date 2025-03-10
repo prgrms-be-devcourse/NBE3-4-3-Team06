@@ -13,6 +13,7 @@ import java.time.LocalDateTime
 
 @Service
 
+// TODO 단위 테스트
 class FundingService(
     private val fundingRepository: FundingRepository,
     private val userService: UserService,

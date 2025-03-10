@@ -119,7 +119,7 @@ class VirtualAccountRestController(
 
     /**
      * 계좌 내역 조회: 현재 로그인한 사용자의 계좌 잔액을 조회합니다.
-     * *
+     *
      *
      * @return funding.startreum.common.util.ApiResponse 객체 안에 조회된 계좌 거래 내역 정보를 포함하여 반환합니다.
      */

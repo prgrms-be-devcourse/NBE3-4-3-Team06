@@ -7,11 +7,9 @@ import jakarta.servlet.http.HttpServletResponse
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.http.HttpMethod
-import org.springframework.security.authorization.AuthorizationDecision
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.http.SessionCreationPolicy
-import org.springframework.security.core.Authentication
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
@@ -35,7 +33,6 @@ open class SecurityConfig(
         return JwtAuthenticationFilter(JwtUtil(), customUserDetailsService)
     }
 
-
     // ✅ Spring Security 필터 체인 설정
     @Bean
     open fun securityFilterChain(http: HttpSecurity): SecurityFilterChain {
@@ -45,84 +42,37 @@ open class SecurityConfig(
             .sessionManagement { it.sessionCreationPolicy(SessionCreationPolicy.STATELESS) } // ✅ 세션 비활성화 (JWT 사용)
             .authorizeHttpRequests {
                 it
-                    // ✅ ID 중복 확인 API는 누구나 접근 가능하도록 허용
-                    .requestMatchers(HttpMethod.GET, "/api/users/check-name").permitAll()
-
-                    // ✅ 프로젝트 생성 API는 수혜자(ROLE_BENEFICIARY)만 접근 가능하도록 설정
-                    .requestMatchers(HttpMethod.POST, "/api/beneficiary/create/projects").hasRole("BENEFICIARY")
-                    .requestMatchers(HttpMethod.GET, "/projects/new").permitAll()
-
-                    // ✅ 검색 API를 인증 없이 허용
-                    .requestMatchers(HttpMethod.GET, "/api/projects/search").permitAll()
-                    .requestMatchers(HttpMethod.GET, "/projects/search").permitAll()
-
-                    // ✅ 프로젝트 상세 API는 인증 없이 접근 가능
-                    .requestMatchers(HttpMethod.GET, "/api/projects/{projectId}").permitAll()
-
-                    // ✅ 프로젝트 상세 페이지(View)는 인증 없이 접근 가능
-                    .requestMatchers(HttpMethod.GET, "/projects/{projectId}").permitAll()
-
-                    // ✅ 인증 없이 접근 가능한 정적 리소스 및 공용 API
+                    // ✅ 누구나 접근 가능 (Next.js에서 처리)
                     .requestMatchers("/", "/home", "/index.html").permitAll()
-                    .requestMatchers("/favicon.ico", "/css/**", "/js/**", "/images/**", "/img/**").permitAll()
-                    .requestMatchers(
-                        "/api/users/signup", "/api/users/registrar", "/api/users/login",
-                        "/api/users/check-email"
-                    ).permitAll()
-
-                    // ✅ 댓글 조회 허용 (로그인 없이 가능)
+                    .requestMatchers(HttpMethod.POST, "/api/users/login").permitAll() // ✅ 로그인 엔드포인트 허용
+                    .requestMatchers(HttpMethod.POST, "/api/users/logout").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/users/signup").permitAll() // ✅ 회원가입  register
+                    .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/users/check-name").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/users/check-email").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/projects/search").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/projects/{projectId}").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/comment/**").permitAll()
 
-                    // ✅ 리워드 조회는 누구나 접근 가능
-                    .requestMatchers(HttpMethod.GET, "/api/reward/{projectId}").permitAll()
+                    // ✅ 인증 필요한 API
+                    .requestMatchers("/api/users/profile/{name}").authenticated()
 
-                    // ✅ HTML 페이지는 누구나 접근 가능 (관리자 뷰 페이지)
-                    .requestMatchers("/admin").permitAll()
-                    // ✅ 관리자 전용 API는 ROLE_ADMIN 필요
+                    // ✅ 관리자 전용 API
                     .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")
 
-                    .requestMatchers("/admin/project").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/account/payment").permitAll()
 
-                    .requestMatchers("/profile/{name}").permitAll()  // ✅ 프로필 뷰는 인증 없이 접근 가능
-                    .requestMatchers("/profile/modify/{name}").permitAll() // ✅ 프로필 수정 뷰도 인증 없이 접근 가능
-                    .requestMatchers("/api/users/profile/{name}").authenticated()  // ✅ 프로필 API는 인증 필요
-                    .requestMatchers("/api/users/profile/modify/{name}")
-                    .access { authenticationSupplier, context ->
-                        val authentication: Authentication = authenticationSupplier.get()
-                        val pathUsername = context.variables["name"]
-
-                        val isOwner = authentication.name == pathUsername
-                        val isAdmin = authentication.authorities.any { it.authority == "ROLE_ADMIN" }
-
-                        AuthorizationDecision(isOwner || isAdmin) // ✅ 본인 또는 관리자만 수정 가능
-                    }
-
-                    .requestMatchers("/profile/account/{name}").permitAll()  // ✅ HTML 페이지는 인증 없이 접근 가능
-                    .requestMatchers(HttpMethod.GET, "/api/account/user/{name}").authenticated()  // ✅ 계좌 조회는 로그인 필요
-                    .requestMatchers(HttpMethod.POST, "/api/account/user/{name}/create")
-                    .access { authenticationSupplier, context ->
-                        val authentication: Authentication = authenticationSupplier.get()
-                        val requestURI = context.request.requestURI
-
-                        // 호출된 사용자 이름 추출
-                        val parts = requestURI.split("/")
-                        val pathUsername = parts[parts.size - 2] // {name} 위치
-
-                        AuthorizationDecision(authentication.name == pathUsername) // ✅ 본인만 계좌 생성 가능
-                    }
-
-                    // ✅ 모든 API 요청에 대해 JWT 인증 필터 적용
+                    // ✅ 기타 모든 요청은 인증 필요
                     .anyRequest().authenticated()
             }
             .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter::class.java) // ✅ JWT 필터 추가
-            .formLogin { it.disable() } // ✅ 기본 로그인 폼 비활성화 (Spring이 가로채지 않도록)
+            .formLogin { it.disable() } // ✅ 기본 로그인 폼 비활성화
             .logout {
                 it.logoutUrl("/api/users/logout") // ✅ 로그아웃 URL
                     .logoutSuccessHandler { _, response, _ ->
                         response.contentType = "application/json"
                         response.characterEncoding = "UTF-8"
                         response.status = HttpServletResponse.SC_OK
-
                         val jsonResponse = """{"status": "success", "message": "로그아웃 성공"}"""
                         response.writer.write(jsonResponse)
                         response.writer.flush()
@@ -133,16 +83,15 @@ open class SecurityConfig(
         return http.build()
     }
 
-    // ✅ CORS 설정 추가 (필요한 경우 도메인 허용 가능)
+    // ✅ CORS 설정 (Next.js와의 연동을 위해 도메인 제한)
     @Bean
     open fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("*") // ✅ 모든 도메인 허용 (개발 환경에서만 적용)
+        configuration.allowedOrigins = listOf("http://localhost:3000") // ✅ Next.js 개발 서버 허용
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
-        configuration.allowedHeaders = listOf("*") // ✅ 모든 헤더 허용
-        configuration.exposedHeaders = listOf("Authorization") // ✅ 클라이언트가 Authorization 헤더 접근 가능하도록 설정
-
-        configuration.allowCredentials = true
+        configuration.allowedHeaders = listOf("*")
+        configuration.exposedHeaders = listOf("Authorization")
+        configuration.allowCredentials = true // ✅ JWT 사용을 위해 쿠키 허용
 
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)
