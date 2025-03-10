@@ -12,15 +12,9 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.web.bind.annotation.*
 
-/**
- * RewardRestController 클래스
- *
- * 이 컨트롤러는 리워드 관련 API 엔드포인트를 제공하며,
- * 리워드 생성, 조회, 수정, 삭제 요청을 처리합니다.
- */
 @RestController
 @RequestMapping("/api/reward")
-public open class RewardRestController( // ✅ open 추가하여 프록시 생성 가능하도록 설정
+class RewardRestController( // ✅ open 추가하여 프록시 생성 가능하도록 설정
     private val service: RewardService
 ) {
 

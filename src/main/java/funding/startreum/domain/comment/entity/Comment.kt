@@ -1,11 +1,11 @@
 package funding.startreum.domain.comment.entity
 
 
-
 import funding.startreum.domain.project.entity.Project
 import funding.startreum.domain.users.entity.User
 
 import jakarta.persistence.*
+import org.springframework.security.access.AccessDeniedException
 import java.time.LocalDateTime
 
 @Entity
@@ -32,4 +32,9 @@ class Comment(
 ) {
     // 기본 생성자 추가 (JPA 필수)
     constructor() : this(null, Project(), User(), "", LocalDateTime.now(), null)
+
+    fun verifyPermission(username: String) {
+        if (this.user.name != username)
+            throw AccessDeniedException("댓글에 접근할 권한이 없습니다.")
+    }
 }

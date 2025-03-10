@@ -1,25 +1,23 @@
 package funding.startreum.domain.funding.service
 
 
-import funding.startreum.domain.users.entity.User
 import funding.startreum.domain.funding.entity.Funding
 import funding.startreum.domain.funding.exception.FundingNotFoundException
 import funding.startreum.domain.funding.repository.FundingRepository
 import funding.startreum.domain.project.entity.Project
-import funding.startreum.domain.reward.repository.RewardRepository
+import funding.startreum.domain.users.entity.User
 import funding.startreum.domain.users.service.UserService
-import lombok.RequiredArgsConstructor
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDateTime
 
 @Service
-@RequiredArgsConstructor
-class FundingService {
-    private val rewardRepository: RewardRepository? = null
-    private val fundingRepository: FundingRepository? = null
 
-    private val userService: UserService? = null
+// TODO 단위 테스트
+class FundingService(
+    private val fundingRepository: FundingRepository,
+    private val userService: UserService,
+) {
 
     /**
      * 펀딩 내역을 저장 후 반환합니다.
@@ -29,19 +27,20 @@ class FundingService {
      * @param paymentAmount 펀딩 금액
      * @return 정보가 담긴 Funding 객체
      */
-    fun createFunding(project: Project, username: String, paymentAmount: BigDecimal): Funding {
-        val sponsor: User = userService!!.getUserByName(username)
+    fun createFunding(currentProject: Project, username: String, paymentAmount: BigDecimal): Funding {
+        val spon: User = userService.getUserByName(username)
 
-        val funding = Funding()
-        funding.project = project
-        funding.amount = paymentAmount
-        funding.fundedAt = LocalDateTime.now()
-        funding.sponsor = sponsor
+        val funding = Funding().apply {
+            project = currentProject
+            amount = paymentAmount
+            fundedAt = LocalDateTime.now()
+            sponsor = spon
+        }
 
         // 리워드 할당: 결제 금액이 리워드 기준 이하인 경우,
         // rewardRepository.findTopByProject_ProjectIdAndAmountLessThanEqualOrderByAmountDesc(project.getProjectId(), paymentAmount)
         //          .ifPresent(funding::setReward);
-        fundingRepository!!.save(funding)
+        fundingRepository.save(funding)
         return funding
     }
 
@@ -52,7 +51,7 @@ class FundingService {
      * @return 취소된 Funding 객체
      */
     fun cancelFunding(fundingId: Int): Funding {
-        val funding = fundingRepository!!.findByFundingId(fundingId)
+        val funding = fundingRepository.findByFundingId(fundingId)
             .orElseThrow { FundingNotFoundException(fundingId) }
 
         funding.isDeleted = true

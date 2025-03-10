@@ -1,6 +1,7 @@
 package funding.startreum.domain.virtualaccount.entity
 
 import funding.startreum.domain.users.entity.User
+import funding.startreum.domain.virtualaccount.exception.NotEnoughBalanceException
 import jakarta.persistence.*
 import java.math.BigDecimal
 import java.time.LocalDateTime
@@ -31,4 +32,18 @@ class VirtualAccount(
     constructor() : this(
         null, User(), BigDecimal.ZERO, LocalDateTime.now(), null, false
     )
+
+    /**
+     * 현재 계좌에서 출금하여 대상 계좌로 자금을 이체합니다.
+     *
+     * @param amount        거래 금액
+     * @param to 입금(또는 환불 입금) 대상 계좌
+     * @throws NotEnoughBalanceException 잔액이 부족할 경우 예외 발생
+     */
+    fun transferTo(amount: BigDecimal, to: VirtualAccount) {
+        if (this.balance < amount) throw NotEnoughBalanceException(this.balance)
+        // 대상 계좌에 입금
+        this.balance = balance.subtract(amount)
+        to.balance = to.balance.add(amount)
+    }
 }
