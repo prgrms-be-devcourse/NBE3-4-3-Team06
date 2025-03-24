@@ -86,3 +86,11 @@ tasks.withType<Jar> {
 tasks.named<org.springframework.boot.gradle.tasks.bundling.BootJar>("bootJar") {
 	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
+
+tasks.register<JavaExec>("runAiSummary") {
+	group = "ai"
+	description = "Run AI summarizer"
+	classpath = sourceSets["main"].runtimeClasspath
+	mainClass.set("aisummary.AiSummarizer")
+	environment("OPENAI_API_KEY", System.getenv("OPENAI_API_KEY"))
+}
