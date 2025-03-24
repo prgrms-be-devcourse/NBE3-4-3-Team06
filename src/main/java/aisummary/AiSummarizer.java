@@ -1,4 +1,7 @@
 package aisummary;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -11,6 +14,9 @@ public class AiSummarizer {
         String diff = Files.readString(Path.of("changes.diff"));
         String apiKey = System.getenv("OPENAI_API_KEY");
 
+        ObjectMapper mapper = new ObjectMapper();
+        String escapedDiff = mapper.writeValueAsString(diff); // JSON 문자열 escape 처리됨
+
         String requestBody = """
         {
           "model": "gpt-3.5-turbo",
@@ -19,7 +25,7 @@ public class AiSummarizer {
             {"role": "user", "content": %s }
           ]
         }
-        """.formatted("\"" + diff.replace("\"", "\\\"") + "\"");
+        """.formatted(escapedDiff); // 여기서 escapedDiff 그대로 삽입
 
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(new URI("https://api.openai.com/v1/chat/completions"))
