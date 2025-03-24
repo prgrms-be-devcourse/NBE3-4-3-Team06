@@ -15,7 +15,7 @@ jobs:
       - name: Get git diff
         run: |
           git fetch origin main
-          git diff HEAD^ HEAD > changes.diff
+          git diff HEAD^ HEAD > changes.diff || echo "No diff available" > changes.diff
 
       - name: Set up Java
         uses: actions/setup-java@v3
